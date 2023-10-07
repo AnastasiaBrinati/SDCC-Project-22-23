@@ -1,0 +1,148 @@
+/* Reset dei margini e dei padding del corpo del documento */
+body, h1, h2, p, div, span {
+    margin: 0;
+    padding: 0;
+}
+
+/* Stili del corpo del documento */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+/* Intestazione */
+header {
+    background-color: #3498db;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+}
+
+/* titolo per ogni container */
+.container-title {
+    background-color:rgb(144, 184, 219) ;
+    color:#f0f0f0;
+    padding: 20px;
+}
+
+.new-section {
+    margin-top: 20px; /* Spazio tra la nuova sezione e la sezione precedente */
+    background-color: #f0f0f0;
+    padding: 20px;
+}
+
+.sidebar {
+    width: 25%; /* Larghezza della colonna laterale */
+    background-color: #f0f0f0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.new-section h2 {
+    margin-top: 0; /* Rimuovi il margine superiore dal titolo della nuova sezione */
+}
+
+/* Contenitore delle cards dei giorni */
+.weather-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin: 20px;
+}
+
+/* Stili delle cards dei giorni */
+.day-card {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    padding: 20px;
+    text-align: center;
+    max-width: 150px;
+}
+
+.today-card {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    padding: 20px;
+    text-align: center;
+
+}
+
+.stats-card {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    padding: 20px;
+    text-align: center left;
+}
+
+/* Stile per l'immagine nelle card delle città */
+.day-card img {
+    max-width: 50%; /* Larghezza massima al 100% della card */
+    height: auto; /* Altezza automaticamente proporzionata */
+    border: 0px solid #ccc; /* Bordo opzionale intorno all'immagine */
+}
+
+/* Stile per l'immagine nelle card di oggi */
+.today-card img {
+    max-width: 50%; /* Larghezza massima al 100% della card */
+    height: auto; /* Altezza automaticamente proporzionata */
+    border: 0px solid #ccc; /* Bordo opzionale intorno all'immagine */
+}
+
+
+.day-card:hover {
+    transform: scale(1.10); /* Effetto al passaggio del mouse */
+}
+
+/* Assicurati che il testo sia contenuto all'interno del riquadro */
+.day-card h2 {
+    margin: 0; /* Rimuovi il margine predefinito dall'elemento h2 */
+    overflow: hidden; /* Impedisce che il testo del titolo esca fuori */
+    white-space: nowrap; /* Evita che il testo venga a capo */
+    text-overflow: ellipsis; /* Aggiunge "..." se il testo è troppo lungo */
+}
+
+/* Stili delle temperature */
+.temperature {
+    font-weight: bold;
+    color: #3498db;
+}
+
+/* Stile base del bottone */
+.rounded-button {
+    display: inline-block;
+    padding: 5px; /* Regola il padding come preferisci */
+    border-radius: 30px; /* Imposta il raggio di arrotondamento */
+    background-color: #e4bf1b; /* Colore di sfondo */
+    color: #fff; /* Colore del testo */
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.5s ease; /* Transizione di colore quando il mouse passa sopra */
+}
+
+/* Cambia colore quando il mouse passa sopra il bottone */
+.rounded-button:hover {
+    background-color: #f19100; /* Colore di sfondo al passaggio del mouse */
+}
+
+.rounded-button::selection{
+    background-color: #a56300;
+}
+
+
+
+/* Piè di pagina */
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #3498db;
+    color: #fff;
+}
