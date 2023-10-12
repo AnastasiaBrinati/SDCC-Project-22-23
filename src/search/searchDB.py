@@ -1,9 +1,12 @@
 import boto3
 import sys
 
+
+
 DYNAMODB = 'dynamodb'
 REGIONE = 'us-east-1'
 TABELLA_UTENTE = 'Utente'
+
 
 
 class LoggedUser:

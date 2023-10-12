@@ -1,4 +1,6 @@
 from flask import Flask, redirect, render_template, url_for
+from loginRPC import *
+
 
 app = Flask(__name__)
 
@@ -20,7 +22,12 @@ def admin():
 # redirecting login button
 @app.route('/loginpage')
 def loginpage():
-    return render_template("login.html")
+    # asking loginRPC
+    response = sendLoginInfo("Giulio")
+
+    #print(response)
+    return f"Hello {response}!"
+    #return render_template("login.html")
 
 # redirecting search button
 @app.route('/search')

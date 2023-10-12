@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+
+# utilities for microservices and their communication
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: 'rabbitmq:3.6-management-alpine'
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+
+# actual microservices
+
+  frontend:
+    build: ./frontend
+    user: root
+    ports:
+      - 5000:5000
+
+  login:
+    build: ./login
+    user: root
+
+  searching:
+    build: ./searching
+    user: root
+  
+  # tienilo come esempio per vedere come collegare rabbitmq
+  booking:
+    build: ./booking
+    user: root
+    environment:
+      AMQP_URL: 'amqp://guest:guest@rabbitmq:5672?connection_attempts=5&retry_delay=15'
+    ports:
+      - 50053:50053
+    depends_on:
+      - rabbitmq
+
+  
+# essentials for service discovery
+
+  discovery:
+    build: ./discovery
+    user: root
+    ports:
+      - "50060-50061:50060"

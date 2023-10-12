@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package proto;
+
+service Catalogue {
+    rpc Search(CitySearch) returns (SearchResponse);
+}
+
+message CitySearch {
+    bytes name = 1;
+}
+
+message SearchResponse {
+    # cosa viene restituito dalla ricerca
+    string error = 2;
+}
