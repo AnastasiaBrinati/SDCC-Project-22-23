@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, url_for
+from flask import Flask, redirect, render_template, url_for, request
 from loginRPC import *
 
 
@@ -7,7 +7,7 @@ app = Flask(__name__)
 # Defining the home page of our site
 @app.route("/") 
 def home():
-	return render_template("home.html")  # some basic inline html
+	return render_template("home.html", username="")  # some basic inline html
 
 @app.route("/<name>")  # this sets the route to this page
 def user(name):
@@ -17,17 +17,34 @@ def user(name):
 # Now whenever we visit /admin we will be redirected home.
 @app.route("/admin")
 def admin():
-	return redirect(url_for("home"))
+	return redirect(url_for("home", username=""))
 
 # redirecting login button
 @app.route('/loginpage')
 def loginpage():
-    # asking loginRPC
-    response = sendLoginInfo("Giulio")
+    return render_template("login.html")
 
-    #print(response)
-    return f"Hello {response}!"
-    #return render_template("login.html")
+@app.route('/login', methods=('GET','POST'))
+def login():
+    if request.method == 'POST':
+        file_log = open("prova.txt", "w")
+        file_log.write("ciao ")
+
+        """
+        Estraggo i dati inseriti dall'utente per
+        avviare la procedura di login.
+        """
+        # Username
+        username = request.form.get('inputUsername')
+        # Password
+        password = request.form.get('inputPassword')
+
+        file_log.write(username)
+        file_log.write(password)
+        response = sendLoginInfo(username, password)
+        file_log.close()
+        return render_template("home.html", username = response)
+    return render_template("home.html")
 
 # redirecting search button
 @app.route('/search')

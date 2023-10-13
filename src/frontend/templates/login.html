@@ -12,16 +12,18 @@
     </header>
     <section class="container-title">
         <h2>Insert your credentials</h2>
-        
-        <form action="process_login.php" method="post">
-          <label for="username">Username:</label>
-          <input type="text" id="username" name="username" required><br><br>
-          
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password" required><br><br>
-          
-          <button class="rounded-button">Login</button>
-      </form>
+
+        <form action="/login" method="POST">
+            
+            <div class="mb-3">
+              <label for="inputUsername" class="form-label">Username</label>
+              <input class="form-control" type="text" id="username" name="inputUsername" rows="1" required>{{ request.form['inputUsername'] }}
+              <label for="InputPassword">Password:</label>
+              <input class="form-control" type="password" id="password" name="inputPassword" required>{{ request.form['inputPassword'] }}
+            </div>
+            <button class="rounded-button">Login</button>
+        </form>
+
     </section>   
     <footer>
         <p>&copy; 2023 Cloudy Days</p>

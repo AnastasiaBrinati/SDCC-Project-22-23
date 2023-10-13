@@ -1,6 +1,4 @@
 import grpc
-import sys
-import logging
 import time
 
 from proto import login_pb2
@@ -14,7 +12,7 @@ l'applicazione. Viene passato in input un
 messaggio contenente tutte le informazioni
 necessarie per l'iscrizione.
 """
-def sendLoginInfo(username):
+def sendLoginInfo(username, password):
     """
     Verifico se il frontend già è a conoscenza della porta
     su cui contattare il micorservizio di registration.
