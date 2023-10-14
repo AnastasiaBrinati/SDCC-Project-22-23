@@ -25,28 +25,6 @@ services:
 
   login:
     build: ./login
-    user: root
-
-  searching:
-    build: ./searching
-    user: root
-  
-  # tienilo come esempio per vedere come collegare rabbitmq
-  booking:
-    build: ./booking
-    user: root
-    environment:
-      AMQP_URL: 'amqp://guest:guest@rabbitmq:5672?connection_attempts=5&retry_delay=15'
-    ports:
-      - 50053:50053
-    depends_on:
-      - rabbitmq
-
+    user: 50051:50051
   
 # essentials for service discovery
-
-  discovery:
-    build: ./discovery
-    user: root
-    ports:
-      - "50060-50061:50060"

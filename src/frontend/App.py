@@ -1,6 +1,6 @@
 from flask import Flask, redirect, render_template, url_for, request
-from loginRPC import *
 
+from loginRPC import sendLoginInfo
 
 app = Flask(__name__)
 
