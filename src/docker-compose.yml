@@ -2,19 +2,6 @@ version: "3.8"
 
 services:
 
-# utilities for microservices and their communication
-
-  rabbitmq:
-    container_name: rabbitmq
-    image: 'rabbitmq:3.6-management-alpine'
-    volumes:
-      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
-      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-
-
 # actual microservices
 
   frontend:
