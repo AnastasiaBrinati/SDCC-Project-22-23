@@ -2,43 +2,60 @@ syntax = "proto3";
 
 package proto;
 
-service UsersInfo {
-    rpc SignUp(SignUpInfo) returns (SignUpResponse);
-    rpc SignIn(Credentials) returns (SignInResponse);
-    // Logging
-    rpc getLogFileReg(GetLogFileRequestReg) returns (stream GetLogFileReplyReg);
+service DiscoveryService {
+	/*
+		Consente di comunicare con il
+		microservizio passato come parametro.
+	*/
+	rpc discoveryLogin(DiscoveryLoginRequest) returns (DiscoveryLoginReply);
+	
+	
+	/*
+		Consente di registrare la porta relativa
+		al microservizio passato come parametro.
+	*/
+	rpc put(PutRequest) returns (PutReply);
+
 }
 
-message SignUpInfo {
-    bytes email = 1;
-    bytes username = 2;
-    bytes password = 3;
-    bytes passwordConfirm = 4;
-    bytes userType = 5;
-    bytes airline = 6;
-    bytes cartaDiCredito = 7;
+
+/*
+	serviceName: Nome del microservizio di cui si
+		     sta richiedendo l'informazione
+	             relativa alla porta.
+*/
+message DiscoveryLoginRequest {
+	string serviceName = 1;
+	string username = 2;
+}
+/*
+	serviceName: Nome del microservizio di cui si
+		     è chiesto l'informazione relativa
+		     alla porta.
+	             
+	port: 	     valore della porta su cui il microservizio
+	      	     è in ascolto
+*/
+message DiscoveryLoginReply {
+	string validUsername = 1;
 }
 
-message SignUpResponse {
-    bool isOk = 1;
-    string error = 2;
+
+
+
+
+message PutRequest {
+	string serviceName = 1;
+	string port = 2;
 }
 
-message Credentials {
-    bytes username = 1;
-    bytes password = 2;
-}
 
-message SignInResponse {
-    bytes storedType = 1;
-    bool isCorrect = 2;
-}
-
-message GetLogFileRequestReg {
-    int32 numRichiesta = 1;
-}
-
-message GetLogFileReplyReg {
-    bytes chunk_file  = 1;
-    int32 num_chunk = 2;
+/*
+	result:    risultato dell'esecuzione. Il metodo
+		         ritorna TRUE se l'esecuzione è andata
+		         a buon fine; altrimenti, ritorna FALSE.
+	list_server: Lista dei discovery server.
+*/
+message PutReply {
+	bool result = 1;
 }

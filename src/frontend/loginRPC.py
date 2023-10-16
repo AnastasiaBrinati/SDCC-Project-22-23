@@ -1,38 +1,41 @@
 import grpc
 import time
 
-from proto import login_pb2
-from proto import login_pb2_grpc
-
+from proto import discovery_pb2
+from proto import discovery_pb2_grpc
 
 """
-Instanzia un canale di comunicazione con il
-microservizio che gestisce le iscrizioni per
-l'applicazione. Viene passato in input un
-messaggio contenente tutte le informazioni
-necessarie per l'iscrizione.
+Known beforehand, you must have someplace to start the connection with the rest of the system
+"""
+DISCOVERY_SERVER = 'src-api-gateway-1:50060'
+
+"""
+Try to connect with the api-gateway to start the communication.
 """
 def sendLoginInfo(username, password):
     """
-    Verifico se il frontend già è a conoscenza della porta
-    su cui contattare il micorservizio di registration.
+    Attempting to connect to the api-gateway
+    to communicate with the login service.
+    In case of failure,
+    another attempt will be made after 5s.
     """
-    
-    #if (ADDR_PORT == ''):
-    #    discovery_registration()
+    while(True):
+        
+        try:
 
-    ADDR_PORT = "localhost:50051"
+            channel = grpc.insecure_channel(DISCOVERY_SERVER)
+            stub = discovery_pb2_grpc.DiscoveryServiceStub(channel)
+            # Connect with discovery server.
+            res = stub.discoveryLogin(discovery_pb2.DiscoveryLoginRequest(serviceName="frontend", username=username))
+            
+            if (res == "-1"):
+                # Discovery server not available.
+                time.sleep(5)
+                continue
+            return res.validUsername
+        
+        except:
+            # Problema nella connessione con il server.
+            time.sleep(5)
+            continue
 
-    channel = grpc.insecure_channel(ADDR_PORT)
-    stub = login_pb2_grpc.LoginnerStub(channel)
-
-    """
-    Invio della richiesta di iscrizione dell'utente.
-    Il valore di output sarà TRUE se è andata a buon
-    fine; altrimenti, sarà FALSE.(?)
-    """
-
-    output = stub.SayHello(login_pb2.HelloRequest(name=username))
-    print(output)
-
-    return output

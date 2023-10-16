@@ -2,6 +2,14 @@ version: "3.8"
 
 services:
 
+# essentials for service discovery
+
+  api-gateway:
+    build: ./api-gateway
+    user: root
+    ports:
+      - "50060:50060"
+
 # actual microservices
 
   frontend:
@@ -12,6 +20,6 @@ services:
 
   login:
     build: ./login
-    user: 50051:50051
-  
-# essentials for service discovery
+    user: root
+    ports:
+      - 50051:50051

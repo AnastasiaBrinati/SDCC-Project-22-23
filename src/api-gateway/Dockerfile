@@ -12,7 +12,6 @@ RUN apt-get install -y python3-distutils python3-pip python3-apt
 
 # Copio i file necessari per il setup e per il microservizio da eseguire nel container.
 COPY . .
-COPY ./credentials /root/.aws/
 
 RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir -r requirements.txt
 

@@ -1,5 +1,4 @@
 from flask import Flask, redirect, render_template, url_for, request
-
 from loginRPC import sendLoginInfo
 
 app = Flask(__name__)
@@ -27,9 +26,6 @@ def loginpage():
 @app.route('/login', methods=('GET','POST'))
 def login():
     if request.method == 'POST':
-        file_log = open("prova.txt", "w")
-        file_log.write("ciao ")
-
         """
         Estraggo i dati inseriti dall'utente per
         avviare la procedura di login.
@@ -39,10 +35,7 @@ def login():
         # Password
         password = request.form.get('inputPassword')
 
-        file_log.write(username)
-        file_log.write(password)
         response = sendLoginInfo(username, password)
-        file_log.close()
         return render_template("home.html", username = response)
     return render_template("home.html")
 
