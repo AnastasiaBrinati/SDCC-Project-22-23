@@ -3,41 +3,20 @@ syntax = "proto3";
 package proto;
 
 service DiscoveryService {
-	/*
-		Consente di comunicare con il
-		microservizio passato come parametro.
-	*/
+
 	rpc discoveryLogin(DiscoveryLoginRequest) returns (DiscoveryLoginReply);
-	
-	
-	/*
-		Consente di registrare la porta relativa
-		al microservizio passato come parametro.
-	*/
 	rpc put(PutRequest) returns (PutReply);
 
 }
 
 
-/*
-	serviceName: Nome del microservizio di cui si
-		     sta richiedendo l'informazione
-	             relativa alla porta.
-*/
 message DiscoveryLoginRequest {
-	string serviceName = 1;
-	string username = 2;
+	string username = 1;
+	string password = 2;
 }
-/*
-	serviceName: Nome del microservizio di cui si
-		     è chiesto l'informazione relativa
-		     alla porta.
-	             
-	port: 	     valore della porta su cui il microservizio
-	      	     è in ascolto
-*/
+
 message DiscoveryLoginReply {
-	string validUsername = 1;
+	bool correct = 1;
 }
 
 

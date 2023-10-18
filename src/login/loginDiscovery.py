@@ -5,7 +5,8 @@ from proto import discovery_pb2_grpc
 
 
 MY_PORT = '50051'
-DISCOVERY_SERVER = 'src-api-gateway-1:50060'
+MY_SERVER_NAME = 'login'
+DISCOVERY_SERVER = 'src-api-gateway-1:50061'
 
 """
 Expose microservice and it's port.
@@ -28,7 +29,7 @@ def serve():
                 # Provo a connettermi al server
                 channel = grpc.insecure_channel(DISCOVERY_SERVER)
                 stub = discovery_pb2_grpc.DiscoveryServiceStub(channel)
-                put_reply = stub.put(discovery_pb2.PutRequest(serviceName="login" , port="50051"))
+                put_reply = stub.put(discovery_pb2.PutRequest(serviceName=MY_SERVER_NAME , port=MY_PORT))
                 ok = True
             except:
                 # Si è verificato un problema nella connessione con il discovery server

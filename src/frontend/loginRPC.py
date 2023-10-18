@@ -7,7 +7,7 @@ from proto import discovery_pb2_grpc
 """
 Known beforehand, you must have someplace to start the connection with the rest of the system
 """
-DISCOVERY_SERVER = 'src-api-gateway-1:50060'
+DISCOVERY_SERVER = 'src-api-gateway-1:50061'
 
 """
 Try to connect with the api-gateway to start the communication.
@@ -26,13 +26,16 @@ def sendLoginInfo(username, password):
             channel = grpc.insecure_channel(DISCOVERY_SERVER)
             stub = discovery_pb2_grpc.DiscoveryServiceStub(channel)
             # Connect with discovery server.
-            res = stub.discoveryLogin(discovery_pb2.DiscoveryLoginRequest(serviceName="frontend", username=username))
+            reply = stub.discoveryLogin(discovery_pb2.DiscoveryLoginRequest(username=username, password=password))
             
-            if (res == "-1"):
+            if (not reply.correct):
                 # Discovery server not available.
                 time.sleep(5)
                 continue
-            return res.validUsername
+            fp = open("loginrpc.txt", "a")
+            fp.write("\nlogin rpc reply.correct= "+str(reply.correct))
+            fp.close()
+            return reply.correct
         
         except:
             # Problema nella connessione con il server.

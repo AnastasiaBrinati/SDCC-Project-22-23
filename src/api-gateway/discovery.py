@@ -17,7 +17,7 @@ class Microservice:
 
 # who am I?
 # Port:
-PORT = '50060'
+PORT = '50061'
 # Name:
 SERVER_1 = 'src-api-gateway-1'
 # Me [in a list]: 
@@ -44,19 +44,18 @@ class DiscoveryServicer(discovery_pb2_grpc.DiscoveryServiceServicer):
             for m in all_microservices_cache:
                 if m.serviceName == "login":
 
-                    #ADDR_PORT = m.port
-                    channel = grpc.insecure_channel('src-'+m.serviceName+'-1:50051')
+                    channel = grpc.insecure_channel('src-'+m.serviceName+'-1:'+m.port)
                     stub = login_pb2_grpc.LoginnerStub(channel)
-                    hello_reply = stub.SayHello(login_pb2.HelloRequest(name=request.username))
+                    login_reply = stub.Login(login_pb2.LoginRequest(username=request.username, password=request.password))
 
-                    return discovery_pb2.DiscoveryLoginReply(validUsername=hello_reply.msg)
+                    return discovery_pb2.DiscoveryLoginReply(correct=login_reply.correct)
                               
         except:
             """
             Il Discovery server ancora non è a conoscenza
             delle informazioni relative al microservizio richiesto.
             """
-            return discovery_pb2.DiscoveryLoginReply(validUsername="-1")   
+            return discovery_pb2.DiscoveryLoginReply(correct=False)
 
 
     """

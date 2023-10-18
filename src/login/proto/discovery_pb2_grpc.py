@@ -30,19 +30,13 @@ class DiscoveryServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def discoveryLogin(self, request, context):
-        """
-        Consente di comunicare con il
-        microservizio passato come parametro.
-        """
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def put(self, request, context):
-        """
-        Consente di registrare la porta relativa
-        al microservizio passato come parametro.
-        """
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')

@@ -8,7 +8,7 @@ services:
     build: ./api-gateway
     user: root
     ports:
-      - "50060:50060"
+      - "50061:50061"
 
 # actual microservices
 

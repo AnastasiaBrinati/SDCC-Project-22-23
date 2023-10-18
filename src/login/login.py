@@ -10,14 +10,10 @@ import loginDiscovery
 # who am I?
 # Port:
 PORT = '50051'
-# Name:
-SERVER_1 = 'src-login-1'
-# Me [in a list]: 
-SERVERS = []
 
 class Loginner(login_pb2_grpc.LoginnerServicer):
-    def SayHello(self, request, context):
-        return login_pb2.HelloReply(msg="Hello, %s!" % request.name)
+    def Login(self, request, context):
+        return login_pb2.LoginReply(correct=True)
 
 
 

@@ -14,17 +14,17 @@ class LoginnerStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.SayHello = channel.unary_unary(
-                '/proto.Loginner/SayHello',
-                request_serializer=proto_dot_login__pb2.HelloRequest.SerializeToString,
-                response_deserializer=proto_dot_login__pb2.HelloReply.FromString,
+        self.Login = channel.unary_unary(
+                '/proto.Loginner/Login',
+                request_serializer=proto_dot_login__pb2.LoginRequest.SerializeToString,
+                response_deserializer=proto_dot_login__pb2.LoginReply.FromString,
                 )
 
 
 class LoginnerServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def SayHello(self, request, context):
+    def Login(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -33,10 +33,10 @@ class LoginnerServicer(object):
 
 def add_LoginnerServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'SayHello': grpc.unary_unary_rpc_method_handler(
-                    servicer.SayHello,
-                    request_deserializer=proto_dot_login__pb2.HelloRequest.FromString,
-                    response_serializer=proto_dot_login__pb2.HelloReply.SerializeToString,
+            'Login': grpc.unary_unary_rpc_method_handler(
+                    servicer.Login,
+                    request_deserializer=proto_dot_login__pb2.LoginRequest.FromString,
+                    response_serializer=proto_dot_login__pb2.LoginReply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -49,7 +49,7 @@ class Loginner(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def SayHello(request,
+    def Login(request,
             target,
             options=(),
             channel_credentials=None,
@@ -59,8 +59,8 @@ class Loginner(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/proto.Loginner/SayHello',
-            proto_dot_login__pb2.HelloRequest.SerializeToString,
-            proto_dot_login__pb2.HelloReply.FromString,
+        return grpc.experimental.unary_unary(request, target, '/proto.Loginner/Login',
+            proto_dot_login__pb2.LoginRequest.SerializeToString,
+            proto_dot_login__pb2.LoginReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

@@ -3,13 +3,14 @@ syntax = "proto3";
 package proto;
 
 service Loginner {
-    rpc SayHello(HelloRequest) returns (HelloReply) {}
+    rpc Login(LoginRequest) returns (LoginReply) {}
 }
 
-message HelloRequest{
-    string name = 1;
+message LoginRequest{
+    string username = 1;
+    string password = 2;
 }
 
-message HelloReply{
-    string msg = 1;
+message LoginReply{
+    bool correct = 1;
 }

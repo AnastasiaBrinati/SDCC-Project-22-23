@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15proto/discovery.proto\x12\x05proto\">\n\x15\x44iscoveryLoginRequest\x12\x13\n\x0bserviceName\x18\x01 \x01(\t\x12\x10\n\x08username\x18\x02 \x01(\t\",\n\x13\x44iscoveryLoginReply\x12\x15\n\rvalidUsername\x18\x01 \x01(\t\"/\n\nPutRequest\x12\x13\n\x0bserviceName\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\t\"\x1a\n\x08PutReply\x12\x0e\n\x06result\x18\x01 \x01(\x08\x32\x89\x01\n\x10\x44iscoveryService\x12J\n\x0e\x64iscoveryLogin\x12\x1c.proto.DiscoveryLoginRequest\x1a\x1a.proto.DiscoveryLoginReply\x12)\n\x03put\x12\x11.proto.PutRequest\x1a\x0f.proto.PutReplyb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15proto/discovery.proto\x12\x05proto\";\n\x15\x44iscoveryLoginRequest\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"&\n\x13\x44iscoveryLoginReply\x12\x0f\n\x07\x63orrect\x18\x01 \x01(\x08\"/\n\nPutRequest\x12\x13\n\x0bserviceName\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\t\"\x1a\n\x08PutReply\x12\x0e\n\x06result\x18\x01 \x01(\x08\x32\x89\x01\n\x10\x44iscoveryService\x12J\n\x0e\x64iscoveryLogin\x12\x1c.proto.DiscoveryLoginRequest\x1a\x1a.proto.DiscoveryLoginReply\x12)\n\x03put\x12\x11.proto.PutRequest\x1a\x0f.proto.PutReplyb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -21,13 +21,13 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'proto.discovery_pb2', _glob
 if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
   _globals['_DISCOVERYLOGINREQUEST']._serialized_start=32
-  _globals['_DISCOVERYLOGINREQUEST']._serialized_end=94
-  _globals['_DISCOVERYLOGINREPLY']._serialized_start=96
-  _globals['_DISCOVERYLOGINREPLY']._serialized_end=140
-  _globals['_PUTREQUEST']._serialized_start=142
-  _globals['_PUTREQUEST']._serialized_end=189
-  _globals['_PUTREPLY']._serialized_start=191
-  _globals['_PUTREPLY']._serialized_end=217
-  _globals['_DISCOVERYSERVICE']._serialized_start=220
-  _globals['_DISCOVERYSERVICE']._serialized_end=357
+  _globals['_DISCOVERYLOGINREQUEST']._serialized_end=91
+  _globals['_DISCOVERYLOGINREPLY']._serialized_start=93
+  _globals['_DISCOVERYLOGINREPLY']._serialized_end=131
+  _globals['_PUTREQUEST']._serialized_start=133
+  _globals['_PUTREQUEST']._serialized_end=180
+  _globals['_PUTREPLY']._serialized_start=182
+  _globals['_PUTREPLY']._serialized_end=208
+  _globals['_DISCOVERYSERVICE']._serialized_start=211
+  _globals['_DISCOVERYSERVICE']._serialized_end=348
 # @@protoc_insertion_point(module_scope)

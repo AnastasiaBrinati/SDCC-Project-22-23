@@ -13,17 +13,17 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11proto/login.proto\x12\x05proto\"\x1c\n\x0cHelloRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\"\x19\n\nHelloReply\x12\x0b\n\x03msg\x18\x01 \x01(\t2@\n\x08Loginner\x12\x34\n\x08SayHello\x12\x13.proto.HelloRequest\x1a\x11.proto.HelloReply\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11proto/login.proto\x12\x05proto\"2\n\x0cLoginRequest\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"\x1d\n\nLoginReply\x12\x0f\n\x07\x63orrect\x18\x01 \x01(\x08\x32=\n\x08Loginner\x12\x31\n\x05Login\x12\x13.proto.LoginRequest\x1a\x11.proto.LoginReply\"\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'proto.login_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
-  _globals['_HELLOREQUEST']._serialized_start=28
-  _globals['_HELLOREQUEST']._serialized_end=56
-  _globals['_HELLOREPLY']._serialized_start=58
-  _globals['_HELLOREPLY']._serialized_end=83
-  _globals['_LOGINNER']._serialized_start=85
-  _globals['_LOGINNER']._serialized_end=149
+  _globals['_LOGINREQUEST']._serialized_start=28
+  _globals['_LOGINREQUEST']._serialized_end=78
+  _globals['_LOGINREPLY']._serialized_start=80
+  _globals['_LOGINREPLY']._serialized_end=109
+  _globals['_LOGINNER']._serialized_start=111
+  _globals['_LOGINNER']._serialized_end=172
 # @@protoc_insertion_point(module_scope)
