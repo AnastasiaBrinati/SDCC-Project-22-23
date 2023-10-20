@@ -18,6 +18,11 @@ header {
     padding: 20px;
 }
 
+.right-text {
+    color: #fff;
+    text-align: right;
+}
+
 /* titolo per ogni container */
 .container-title {
     background-color:rgb(144, 184, 219) ;
@@ -117,14 +122,14 @@ header {
 
 /* Stile base del bottone */
 .rounded-button {
-    display: inline-block;
-    padding: 5px; /* Regola il padding come preferisci */
+    
     border-radius: 30px; /* Imposta il raggio di arrotondamento */
     background-color: #e4bf1b; /* Colore di sfondo */
     color: #fff; /* Colore del testo */
-    text-align: center;
+    text-align: right;
     text-decoration: none;
     cursor: pointer;
+    margin-right: 0px;
     transition: background-color 0.5s ease; /* Transizione di colore quando il mouse passa sopra */
 }
 

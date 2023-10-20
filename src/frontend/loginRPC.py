@@ -7,7 +7,7 @@ from proto import discovery_pb2_grpc
 """
 Known beforehand, you must have someplace to start the connection with the rest of the system
 """
-DISCOVERY_SERVER = 'src-api-gateway-1:50061'
+DISCOVERY_SERVER = 'src-api-gateway-1:50050'
 
 """
 Try to connect with the api-gateway to start the communication.
@@ -32,9 +32,6 @@ def sendLoginInfo(username, password):
                 # Discovery server not available.
                 time.sleep(5)
                 continue
-            fp = open("loginrpc.txt", "a")
-            fp.write("\nlogin rpc reply.correct= "+str(reply.correct))
-            fp.close()
             return reply.correct
         
         except:

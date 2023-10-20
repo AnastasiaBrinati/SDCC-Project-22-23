@@ -6,6 +6,8 @@ from proto import discovery_pb2
 from proto import discovery_pb2_grpc
 from proto import login_pb2
 from proto import login_pb2_grpc
+from proto import search_pb2
+from proto import search_pb2_grpc
 
 # da sostituire con un db
 microservices_db = []
@@ -17,10 +19,10 @@ class Microservice:
 
 # who am I?
 # Port:
-PORT = '50061'
+PORT = '50050'
 # Name:
 SERVER_1 = 'src-api-gateway-1'
-# Me [in a list]: 
+# [Me] in a list: 
 SERVERS = []
 
 # Cache contenente tutti gli oggetti Microservice che sono stati registrati.
@@ -56,6 +58,28 @@ class DiscoveryServicer(discovery_pb2_grpc.DiscoveryServiceServicer):
             delle informazioni relative al microservizio richiesto.
             """
             return discovery_pb2.DiscoveryLoginReply(correct=False)
+    
+    def discoverySearch(self, request, context):
+        try:
+            # Verifico se è presente l'informazione richiesta.
+            all_microservices_cache_names.index("search")
+            
+            # Cerco la porta relativa al microservizio richiesto.
+            for m in all_microservices_cache:
+                if m.serviceName == "search":
+
+                    channel = grpc.insecure_channel('src-'+m.serviceName+'-1:'+m.port)
+                    stub = search_pb2_grpc.SearcherStub(channel)
+                    search_reply = stub.Search(search_pb2.SearchRequest(city=request.city))
+
+                    return discovery_pb2.DiscoverySearchReply(correct=search_reply.correct)
+                              
+        except:
+            """
+            Il Discovery server ancora non è a conoscenza
+            delle informazioni relative al microservizio richiesto.
+            """
+            return discovery_pb2.DiscoverySearchReply(correct=False)
 
 
     """
@@ -93,6 +117,9 @@ class DiscoveryServicer(discovery_pb2_grpc.DiscoveryServiceServicer):
         
         # return Discovery_pb2.PutReply(result=True, list_server=discovery_servers)
         return discovery_pb2.PutReply(result=True)
+
+# ---------------------------------------- STARTING SERVER DISCOVERY --------------------------------------------- #
+
 
 # Creazione del server RPC
 server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

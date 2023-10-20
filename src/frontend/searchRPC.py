@@ -1,52 +1,41 @@
 import grpc
-import sys
-import logging
 import time
 
-from proto import Registration_pb2
-from proto import Registration_pb2_grpc
-from proto import Discovery_pb2
-from proto import Discovery_pb2_grpc
-
-
-ADDR_PORT = ''
-DISCOVERY_SERVER = 'code_discovery_2:50060'
-
-
-class Output:
-    def __init__(self, storedType, isCorrect):
-        self.isCorrect = isCorrect
-        self.storedType = storedType
-
-
-
+from proto import discovery_pb2
+from proto import discovery_pb2_grpc
 
 """
-Ha il compito di recuperare la porta su cui
-il microservizio registration è in ascolto.
+Known beforehand, you must have someplace to start the connection with the rest of the system
 """
-def discovery_registration():
-    global ADDR_PORT
+DISCOVERY_SERVER = 'src-api-gateway-1:50050'
+
+"""
+Try to connect with the api-gateway to start the communication.
+"""
+def sendCityInfo(city):
     """
-    Si tenta di contattare il discovery server registrato
-    per ottenere la porta su cui il servizio di registration è in
-    ascolto. Se la chiamata dovesse fallire, si attendono 5
-    secondi per poi eseguire nuovamente il tentativo di connessione.
+    Attempting to connect to the api-gateway
+    to communicate with the login service.
+    In case of failure,
+    another attempt will be made after 5s.
     """
     while(True):
+        
         try:
-            # Provo a connettermi al server.
+
             channel = grpc.insecure_channel(DISCOVERY_SERVER)
-            stub = Discovery_pb2_grpc.DiscoveryServiceStub(channel)
-            # Ottengo la porta su cui il microservizio di Registration è in ascolto.
-            res = stub.get(Discovery_pb2.GetRequest(serviceName="frontend" , serviceNameTarget="registration"))
-            if (res.port == -1):
-                # Il discovery server ancora non è a conoscenza della porta richiesta.
+            stub = discovery_pb2_grpc.DiscoveryServiceStub(channel)
+            # Connect with discovery server.
+            reply = stub.discoverySearch(discovery_pb2.DiscoverySearchRequest(city=city))
+            
+            if (not reply.correct):
+                # Discovery server not available.
                 time.sleep(5)
-                continue            
-            ADDR_PORT = res.serviceName + ':' + res.port
-            break
+                continue
+            return reply.correct
+        
         except:
             # Problema nella connessione con il server.
             time.sleep(5)
             continue
+

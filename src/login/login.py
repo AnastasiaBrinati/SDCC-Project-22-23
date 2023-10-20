@@ -10,6 +10,7 @@ import loginDiscovery
 # who am I?
 # Port:
 PORT = '50051'
+NAME = 'login'
 
 class Loginner(login_pb2_grpc.LoginnerServicer):
     def Login(self, request, context):
@@ -26,7 +27,7 @@ server.add_insecure_port('[::]:' + PORT)
 server.start()
 
 try:
-    loginDiscovery.serve()
+    loginDiscovery.serve(PORT, NAME)
     while True:
         time.sleep(86400)   #86400 seconds == 24 hours
 except KeyboardInterrupt:

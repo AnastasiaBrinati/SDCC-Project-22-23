@@ -3,10 +3,7 @@ import grpc
 from proto import discovery_pb2
 from proto import discovery_pb2_grpc
 
-
-MY_PORT = '50051'
-MY_SERVER_NAME = 'login'
-DISCOVERY_SERVER = 'src-api-gateway-1:50061'
+DISCOVERY_SERVER = 'src-api-gateway-1:50050'
 
 """
 Expose microservice and it's port.
@@ -15,7 +12,7 @@ Expose microservice and it's port.
 # scrivi meglio e leva le cose di fanfa
 
 # ---------------------------------------- DISCOVERY ---------------------------------------------
-def serve():
+def serve(MY_PORT, MY_SERVER_NAME):
     """
     Si tenta di contattare il discovery server registrato
     per memorizzare la porta su cui il servizio di Registration è in

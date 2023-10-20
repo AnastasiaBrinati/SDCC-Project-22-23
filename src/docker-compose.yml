@@ -8,7 +8,7 @@ services:
     build: ./api-gateway
     user: root
     ports:
-      - "50061:50061"
+      - "50050:50050"
 
 # actual microservices
 
@@ -23,3 +23,9 @@ services:
     user: root
     ports:
       - 50051:50051
+  
+  search:
+    build: ./search
+    user: root
+    ports:
+      - 50052:50052

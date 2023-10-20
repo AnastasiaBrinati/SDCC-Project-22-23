@@ -5,6 +5,7 @@ package proto;
 service DiscoveryService {
 
 	rpc discoveryLogin(DiscoveryLoginRequest) returns (DiscoveryLoginReply);
+	rpc discoverySearch(DiscoverySearchRequest) returns (DiscoverySearchReply);
 	rpc put(PutRequest) returns (PutReply);
 
 }
@@ -19,22 +20,19 @@ message DiscoveryLoginReply {
 	bool correct = 1;
 }
 
+message DiscoverySearchRequest {
+	string city = 1;
+}
 
-
-
+message DiscoverySearchReply {
+	bool correct = 1;
+}
 
 message PutRequest {
 	string serviceName = 1;
 	string port = 2;
 }
 
-
-/*
-	result:    risultato dell'esecuzione. Il metodo
-		         ritorna TRUE se l'esecuzione è andata
-		         a buon fine; altrimenti, ritorna FALSE.
-	list_server: Lista dei discovery server.
-*/
 message PutReply {
 	bool result = 1;
 }

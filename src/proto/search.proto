@@ -2,15 +2,14 @@ syntax = "proto3";
 
 package proto;
 
-service Catalogue {
-    rpc Search(CitySearch) returns (SearchResponse);
+service Searcher {
+    rpc Search(SearchRequest) returns (SearchReply) {}
 }
 
-message CitySearch {
-    bytes name = 1;
+message SearchRequest{
+    string city = 1;
 }
 
-message SearchResponse {
-    # cosa viene restituito dalla ricerca
-    string error = 2;
+message SearchReply{
+    bool correct = 1;
 }

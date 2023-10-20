@@ -9,28 +9,36 @@
 <body>
     <header>
         <h1>Cloudy Days</h1>
-        <section>
+        <section class="right-text">
             <p><a href=loginpage>
             <button class="rounded-button">Login</button>
             </a></p>
-            <form id="search-form">
-                <input type="text" id="city-search" placeholder="Inserisci il nome della città">
-            </form>
-                <p><a href=search>
-                <button class="rounded-button" type="submit">Search</button>
-                </a></p>
-            <b style="font-size: 25px">{{ username }}</b>
         </section>
     </header>
     <section class="container-title">
-        <h2>Today</h2>
-        <p>Check out today's weather.</p>
+        <div>
+            <h2>Today</h2>
+            <p>Check out today's weather.</p>
+        </div>
+        <form action="/search" method="POST">
+            <div class="mb-3">
+                <section class="right-text">
+                    
+                    <input class="form-control" placeholder="Insert city name" type="text" id="city-search" name="inputCity" rows="1" required>{{ request.form['inputCity'] }}
+                    
+                        <p><a href=search>
+                        <button class="rounded-button" type="submit">Search</button>
+                        </a></p>
+                </section>
+            </div>
+        </form>
     </section>
     <section class="weather-container">
     
         <div class="today-card">
             <h2>Lunedì</h2>
-            <img src="..\static\images\sun.png" alt="Nome della città">
+            <b style="font-size: 25px">{{ city }}</b>
+            <img src="..\static\images\sun.png">
             <p>Temp: <span class="temperature">25°C</span></p>
             <p>Humidity: <span class="temperature">35%</span></p>
         </div>

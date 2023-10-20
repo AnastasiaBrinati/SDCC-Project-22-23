@@ -8,35 +8,44 @@
 </head>
 <body>
     <header>
-        <h1>Cloudy Days</h1>
+        <div>
+            <h1>Cloudy Days</h1>
+        </div>
+        <div class="right-text">
         <p><a href=logout>
-          <button class="rounded-button" type="logout">Search</button>
+          <button class="rounded-button" type="logout">Logout</button>
         </a></p>
-        <section>
-            <form id="search-form">
-                <input type="text" id="city-search" placeholder="Inserisci il nome della città">
-            </form>
-                <p><a href=search>
-                <button class="rounded-button" type="submit">Search</button>
-                </a></p>
-            <b style="font-size: 25px">{{ username }}</b>
-        </section>
+        </div>
     </header>
     <section class="container-title">
-        <h2>Today</h2>
-        <p>Check out today's weather.</p>
+        <div>
+            <h2>Today</h2>
+            <p>Check out today's weather.</p>
+        </div>
+        <form action="/search" method="POST">
+            <div class="mb-3">
+                <section class="right-text">
+                    
+                    <input class="form-control" placeholder="Insert city name" type="text" id="city-search" name="inputCity" rows="1" required>{{ request.form['inputCity'] }}
+                        <p><a href=search>
+                        <button class="rounded-button" type="submit">Search</button>
+                        </a></p>
+                
+                </section>
+            </div>
+        </form>
     </section>
     <section class="weather-container">
     
         <div class="today-card">
             <h2>Lunedì</h2>
+            <b style="font-size: 25px">{{ city }}</b>
             <img src="..\static\images\sun.png" alt="Nome della città">
             <p>Temp: <span class="temperature">25°C</span></p>
             <p>Humidity: <span class="temperature">35%</span></p>
         </div>
         <div class="today-card">
             <p>Preferences</p>
-            
         </div>
         
         <!-- Ripeti lo stesso modello per gli altri giorni della settimana -->
@@ -48,37 +57,37 @@
     <section class="weather-container">
         <div class="day-card" id="lunedì">
             <h2>Lunedì</h2>
-            <img src="..\static\images\storm.png" alt="Nome della città">
+            <img src="..\static\images\storm.png">
             <p>Max temp: <span class="temperature">25°C</span></p>
         </div>
         <div class="day-card" id="'martedì">
             <h2>Martedì</h2>
-            <img src="..\static\images\cloudy.png" alt="Nome della città">
+            <img src="..\static\images\cloudy.png">
             <p>Max temp: <span class="temperature">22°C</span></p>
         </div>
         <div class="day-card">
             <h2>Mercoledì</h2>
-            <img src="..\static\images\sun.png" alt="Nome della città">
+            <img src="..\static\images\sun.png">
             <p>Max temp: <span class="temperature">24°C</span></p>
         </div>
         <div class="day-card">
             <h2>Giovedì</h2>
-            <img src="..\static\images\cloudy.png" alt="Nome della città">
+            <img src="..\static\images\cloudy.png">
             <p>Max temp: <span class="temperature">25°C</span></p>
         </div>
         <div class="day-card">
             <h2>Venerdì</h2>
-            <img src="..\static\images\storm.png" alt="Nome della città">
+            <img src="..\static\images\storm.png">
             <p>Max temp: <span class="temperature">25°C</span></p>
         </div>
         <div class="day-card">
             <h2>Sabato</h2>
-            <img src="..\static\images\sun.png" alt="Nome della città">
+            <img src="..\static\images\sun.png">
             <p>Max temp: <span class="temperature">25°C</span></p>
         </div>
         <div class="day-card">
             <h2>Domenica</h2>
-            <img src="..\static\images\cloudyrain.png" alt="Nome della città">
+            <img src="..\static\images\cloudyrain.png">
             <p>Max temp: <span class="temperature">25°C</span></p>
         </div>
         <!-- Ripeti lo stesso modello per gli altri giorni della settimana -->

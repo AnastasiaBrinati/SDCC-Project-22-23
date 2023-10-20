@@ -1,6 +1,7 @@
 from flask import Flask, redirect, render_template, url_for, request, session
 from flask_session import Session
 from loginRPC import sendLoginInfo
+from searchRPC import sendCityInfo
 
 app = Flask(__name__)
 app.debug = False
@@ -13,9 +14,13 @@ Session(app)
 def menu():
 	return render_template("home.html", username="")  # some basic inline html
 
-@app.route("/<string:username>/home", methods=('GET','POST'))
-def home(username):
-     return render_template("home.html", username=username)  # some basic inline html
+@app.route("/home/<string:city>", methods=('GET','POST'))
+def home(city):
+     return render_template("home1.html", city=city)  # some basic inline html
+
+@app.route("/home/<string:username>", methods=('GET','POST'))
+def logged_home(username):
+     return render_template("home1.html", username=username)  # some basic inline html
 
 
 # redirecting login button
@@ -39,15 +44,27 @@ def login():
         if response == True:
             # Salvataggio dello stato della sessione
             session[username] = username
-            return redirect("/"+username+"/home")
+            return redirect("/home/"+username)
+        
     return redirect("/")
 
 
 # redirecting search button
-@app.route('/search')
+@app.route('/search', methods=('GET','POST'))
 def search():
-    # qua sarebbe da fare * cerca la roba per la città richiesta * e poi ricarica homepage con dati cercati
-    return f"Succesfully searched something!"
+    if request.method == 'POST':
+        """
+        Estraggo i dati inseriti dall'utente per
+        cercare i dati relativi alla città.
+        """
+        # cityName
+        city = request.form.get('inputCity')
+
+        response = sendCityInfo(city)
+        if response == True:
+            return redirect("/home/"+city)
+        
+    return redirect("/")
 
 #logout
 @app.route("/<string:username>/logout")
