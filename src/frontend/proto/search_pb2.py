@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x12proto/search.proto\x12\x05proto\"\x1d\n\rSearchRequest\x12\x0c\n\x04\x63ity\x18\x01 \x01(\t\"\x1e\n\x0bSearchReply\x12\x0f\n\x07\x63orrect\x18\x01 \x01(\x08\x32@\n\x08Searcher\x12\x34\n\x06Search\x12\x14.proto.SearchRequest\x1a\x12.proto.SearchReply\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x12proto/search.proto\x12\x05proto\"\x1d\n\rSearchRequest\x12\x0c\n\x04\x63ity\x18\x01 \x01(\t\"g\n\x0bSearchReply\x12\x0f\n\x07\x63orrect\x18\x01 \x01(\x08\x12\x0c\n\x04\x63ity\x18\x02 \x01(\t\x12\x13\n\x0btemperature\x18\x03 \x01(\x02\x12\x10\n\x08humidity\x18\x04 \x01(\x02\x12\x12\n\ncloudiness\x18\x05 \x01(\t2@\n\x08Searcher\x12\x34\n\x06Search\x12\x14.proto.SearchRequest\x1a\x12.proto.SearchReply\"\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -23,7 +23,7 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _globals['_SEARCHREQUEST']._serialized_start=29
   _globals['_SEARCHREQUEST']._serialized_end=58
   _globals['_SEARCHREPLY']._serialized_start=60
-  _globals['_SEARCHREPLY']._serialized_end=90
-  _globals['_SEARCHER']._serialized_start=92
-  _globals['_SEARCHER']._serialized_end=156
+  _globals['_SEARCHREPLY']._serialized_end=163
+  _globals['_SEARCHER']._serialized_start=165
+  _globals['_SEARCHER']._serialized_end=229
 # @@protoc_insertion_point(module_scope)

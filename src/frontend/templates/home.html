@@ -10,9 +10,19 @@
     <header>
         <h1>Cloudy Days</h1>
         <section class="right-text">
-            <p><a href=loginpage>
-            <button class="rounded-button">Login</button>
-            </a></p>
+
+            <div class="mb-3">
+                <label id="lab1" for="inputUsername" class="form-label">Username:</label>
+                <input class="form-control" placeholder="username" type="text" id="usernameform" name="inputUsername" rows="1" required>
+                <label id="lab2" for="InputPassword">Password:</label>
+                <input class="form-control" type="password" id="passwordform" name="inputPassword" required>
+            </div>
+
+            <button class="rounded-button" id="login_btn" type="button">Login</button>
+            <label id="lab3" class="form-label" style='display:none'></label>
+            <button class="rounded-button" id="logout_btn" style='display:none' type="button">Logout</button>
+
+
         </section>
     </header>
     <section class="container-title">
@@ -20,31 +30,34 @@
             <h2>Today</h2>
             <p>Check out today's weather.</p>
         </div>
-        <form action="/search" method="POST">
-            <div class="mb-3">
+        <form>
+            
                 <section class="right-text">
                     
-                    <input class="form-control" placeholder="Insert city name" type="text" id="city-search" name="inputCity" rows="1" required>{{ request.form['inputCity'] }}
+                    <div class="mb-3">
+                        <label for="inputCity" class="form-label">Cerca la tua città:</label>
+                        <input id='cityform' class="form-control" placeholder="Insert city name" type="text" name="inputCity" rows="1" required>
+                    </div>
+
+                    <button class="rounded-button" id="search_btn" type="button">Search</button>
                     
-                        <p><a href=search>
-                        <button class="rounded-button" type="submit">Search</button>
-                        </a></p>
                 </section>
-            </div>
+            
         </form>
     </section>
     <section class="weather-container">
     
         <div class="today-card">
-            <h2>Lunedì</h2>
-            <b style="font-size: 25px">{{ city }}</b>
-            <img src="..\static\images\sun.png">
-            <p>Temp: <span class="temperature">25°C</span></p>
-            <p>Humidity: <span class="temperature">35%</span></p>
+            <h2 id='cityname' style="font-size: 25px">{{ city }}</h2>
+            <h2 id="day-of-week"></h2>
+            <img id='weatherpic' src="..\static\images\sun.png">
+            <p>Last Update: <span id='todayDateTime' class="temperature"></span></p>
+            <p>Temp: <span id='temp' class="temperature">{{ temp }}</span></p>
+            <p>Humidity: <span id='hum' class="temperature">{{ hum }}</span></p>
+            <p>Cloudiness: <span id='cloud' class="temperature">{{ cloud }}</span></p>
         </div>
         <div class="today-card">
             <p>Preferences</p>
-            
         </div>
         
         <!-- Ripeti lo stesso modello per gli altri giorni della settimana -->
@@ -112,27 +125,161 @@
 </html>
 
 <script>
-    // Funzione per aggiornare Max temp
-    function updateMaxTemp(day) {
-        // Trova l'elemento "Max temp" all'interno della "day-card" specifica
-        var maxTempElement = document.querySelector(`#${day} .temperature`);
-        
-        // Estrai il valore corrente e convertilo in un numero
-        var currentMaxTemp = parseFloat(maxTempElement.textContent);
-        
-        // Incrementa il valore di 1
-        var newMaxTemp = currentMaxTemp + 1;
-        
-        // Aggiorna il testo con il nuovo valore
-        maxTempElement.textContent = newMaxTemp + "°C";
-    }
+    document.addEventListener('DOMContentLoaded', function () {
+        var daysOfWeek = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
+        var today = new Date();
+        var dayOfWeek = daysOfWeek[today.getDay()];
 
-    // Aggiungi un gestore di eventi di click per ciascuna "day-card"
-    var dayCards = document.querySelectorAll(".day-card");
-    dayCards.forEach(function (dayCard) {
-        dayCard.addEventListener("click", function () {
-            var day = this.getAttribute("id");
-            updateMaxTemp(day);
+        var dayOfWeekElement = document.getElementById('day-of-week');
+        dayOfWeekElement.textContent = "-"+dayOfWeek;
+    });
+</script>
+
+
+<script>
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var launchButton = document.getElementById('search_btn');
+
+        launchButton.addEventListener('click', function () {
+
+            var cityform = document.getElementById('cityform');
+            var city = cityform.value;
+
+            fetch('/search', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ city: city })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                    if(data.correct){
+                        var form1 = document.getElementById("cityname");
+                        var form2 = document.getElementById("temp");
+                        var form3 = document.getElementById("hum");
+                        var form4 = document.getElementById("cloud");
+                        form1.innerHTML = data.city;
+                        form2.innerHTML = data.temperature;
+                        form3.innerHTML = data.humidity;
+                        form4.innerHTML = data.cloudiness;
+
+                        var cloudinessPic = document.getElementById('weatherpic');
+
+
+                        switch (data.cloudiness) {
+                            case "overcast clouds":
+                                cloudinessPic.src = "/static/images/cloudy.png";
+                                break;
+                            case "light rain":
+                                cloudinessPic.src = "/static/images/cloudy2.png";
+                                break;
+                            case "secco":
+                                cloudinessPic.src = "/static/images/cloudy.png";
+                                break;
+                            case "clear sky":
+                                cloudinessPic.src = "/static/images/sun.png";
+                                break;
+                            case "few clouds":
+                                cloudinessPic.src = "/static/images/storm.png";
+                                break;
+                            case "rain":
+                                cloudinessPic.src = "/static/images/storm.png";
+                                break;
+                            case "broken clouds":
+                                cloudinessPic.src = "/static/images/cloudy.png";
+                                break;
+                            case "scattered clouds":
+                                cloudinessPic.src = "/static/images/cloudy.png";
+                                break;
+                            default:
+                                cloudinessPic.src = "/static/images/cloudy.png";
+                        }
+                    }
+            });
+        
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var launchButton = document.getElementById('login_btn');
+
+        launchButton.addEventListener('click', function () {
+
+            var usernameform = document.getElementById('usernameform');
+            var passwordform = document.getElementById('passwordform');
+            var username = usernameform.value;
+            var password = passwordform.value;
+
+            fetch('/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ username: username, password: password })
+                    })
+            .then(response => response.json()).then(data => {
+                if(data.correct){
+                    var usernamelab = document.getElementById('lab3');
+                    usernamelab.innerHTML = data.username;
+                    usernamelab.style.display = "block";
+
+                    var button1 = document.getElementById("login_btn");
+                    var button2 = document.getElementById("logout_btn");
+                    button1.style.display = "none";
+                    button2.style.display = "block";
+                    button2.style.float = "right";
+
+                    // login form
+                    var form1 = document.getElementById("lab1");
+                    var form2 = document.getElementById("lab2");
+                    var form3 = document.getElementById("usernameform");
+                    var form4 = document.getElementById("passwordform");
+                    form1.style.display = "none";
+                    form2.style.display = "none";
+                    form3.style.display = "none";
+                    form4.style.display = "none";
+                }
+            });
+        
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var launchButton = document.getElementById('logout_btn');
+        var usernamelab = document.getElementById('lab3');
+        var username = usernamelab.value;
+
+        launchButton.addEventListener('click', function () {
+
+            fetch('/logout'+username)
+
+            usernamelab.style.display = "none";
+            var button1 = document.getElementById("login_btn");
+            var button2 = document.getElementById("logout_btn");
+            button1.style.display = "block";
+            button2.style.display = "none";
+            button1.style.float = "right";
+
+            // login form
+            var form1 = document.getElementById("lab1");
+            var form2 = document.getElementById("lab2");
+            var form3 = document.getElementById("usernameform");
+            var form4 = document.getElementById("passwordform");
+
+            form1.style.display = "block";
+            form2.style.display = "block";
+            form3.style.display = "block";
+            form4.style.display = "block";
+            form4.style.float = "right";
+            form3.style.float = "right";
+            form3.value = "";
+            form4.value = "";
+            
+        });
+    });
+
+
 </script>

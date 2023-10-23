@@ -72,7 +72,10 @@ class DiscoveryServicer(discovery_pb2_grpc.DiscoveryServiceServicer):
                     stub = search_pb2_grpc.SearcherStub(channel)
                     search_reply = stub.Search(search_pb2.SearchRequest(city=request.city))
 
-                    return discovery_pb2.DiscoverySearchReply(correct=search_reply.correct)
+                    if(not search_reply.correct):
+                        return discovery_pb2.DiscoverySearchReply(correct=False)
+                    
+                    return discovery_pb2.DiscoverySearchReply(correct=True, city=search_reply.city, temperature=search_reply.temperature, humidity=search_reply.humidity, cloudiness=search_reply.cloudiness)
                               
         except:
             """

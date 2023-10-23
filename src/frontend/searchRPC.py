@@ -27,12 +27,12 @@ def sendCityInfo(city):
             stub = discovery_pb2_grpc.DiscoveryServiceStub(channel)
             # Connect with discovery server.
             reply = stub.discoverySearch(discovery_pb2.DiscoverySearchRequest(city=city))
-            
+            today = [reply.temperature, reply.humidity, reply.cloudiness]
             if (not reply.correct):
                 # Discovery server not available.
                 time.sleep(5)
                 continue
-            return reply.correct
+            return today
         
         except:
             # Problema nella connessione con il server.

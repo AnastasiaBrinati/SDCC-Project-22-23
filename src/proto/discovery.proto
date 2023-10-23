@@ -26,6 +26,10 @@ message DiscoverySearchRequest {
 
 message DiscoverySearchReply {
 	bool correct = 1;
+  string city = 2;
+  float temperature = 3;
+  float humidity = 4;
+  string cloudiness = 5;
 }
 
 message PutRequest {
