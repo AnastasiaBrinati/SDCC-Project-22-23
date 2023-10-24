@@ -2,32 +2,32 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose convert
+    kompose.cmd: kompose convert -f docker-compose.yml
     kompose.version: 1.26.0 (40646f47)
   creationTimestamp: null
   labels:
-    io.kompose.service: src-login
-  name: src-login
+    io.kompose.service: search
+  name: search
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: src-login
+      io.kompose.service: search
   strategy: {}
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose convert
+        kompose.cmd: kompose convert -f docker-compose.yml
         kompose.version: 1.26.0 (40646f47)
       creationTimestamp: null
       labels:
-        io.kompose.service: src-login
+        io.kompose.service: search
     spec:
       containers:
-        - image: src-login
-          name: src-login
+        - image: src-search
+          name: search
           ports:
-            - containerPort: 50051
+            - containerPort: 50052
           resources: {}
       restartPolicy: Always
 status: {}
