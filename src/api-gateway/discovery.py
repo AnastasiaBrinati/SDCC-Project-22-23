@@ -26,10 +26,7 @@ SERVER_1 = 'src-api-gateway-1'
 SERVERS = []
 
 # Cache contenente tutti gli oggetti Microservice che sono stati registrati.
-all_microservices_cache = []
-
-# Cache contenente tutti i nomi dei microservizi che sono stati registrati.
-all_microservices_cache_names = []
+microservices = {}
 
 
 # Discovery Server
@@ -40,48 +37,46 @@ class DiscoveryServicer(discovery_pb2_grpc.DiscoveryServiceServicer):
     def discoveryLogin(self, request, context):
         try:
             # Verifico se è presente l'informazione richiesta.
-            all_microservices_cache_names.index("login")
+            port = microservices['login']
+
+            fp = open("connection.txt", "a")
+            fp.write("prima di chiamare\n")
+            fp.close()
             
-            # Cerco la porta relativa al microservizio richiesto.
-            for m in all_microservices_cache:
-                if m.serviceName == "login":
+            channel = grpc.insecure_channel('src-login-1:'+port)
+            stub = login_pb2_grpc.LoginnerStub(channel)
+            login_reply = stub.Login(login_pb2.LoginRequest(username=request.username, password=request.password))
 
-                    channel = grpc.insecure_channel('src-'+m.serviceName+'-1:'+m.port)
-                    stub = login_pb2_grpc.LoginnerStub(channel)
-                    login_reply = stub.Login(login_pb2.LoginRequest(username=request.username, password=request.password))
+            fp = open("connection.txt", "a")
+            fp.write("dopo la chiamata\n")
+            fp.close()
 
-                    return discovery_pb2.DiscoveryLoginReply(correct=login_reply.correct)
+            if(login_reply.correct):
+                fp = open("connection.txt", "a")
+                fp.write("risppsta corretta\n")
+                fp.close()
+                return discovery_pb2.DiscoveryLoginReply(correct=True)
+
+            return discovery_pb2.DiscoveryLoginReply(correct=False)
                               
         except:
-            """
-            Il Discovery server ancora non è a conoscenza
-            delle informazioni relative al microservizio richiesto.
-            """
             return discovery_pb2.DiscoveryLoginReply(correct=False)
     
     def discoverySearch(self, request, context):
         try:
             # Verifico se è presente l'informazione richiesta.
-            all_microservices_cache_names.index("search")
-            
-            # Cerco la porta relativa al microservizio richiesto.
-            for m in all_microservices_cache:
-                if m.serviceName == "search":
+            port = microservices['search']
 
-                    channel = grpc.insecure_channel('src-'+m.serviceName+'-1:'+m.port)
-                    stub = search_pb2_grpc.SearcherStub(channel)
-                    search_reply = stub.Search(search_pb2.SearchRequest(city=request.city))
+            channel = grpc.insecure_channel('src-search-1:'+port)
+            stub = search_pb2_grpc.SearcherStub(channel)
+            search_reply = stub.Search(search_pb2.SearchRequest(city=request.city))
 
-                    if(not search_reply.correct):
-                        return discovery_pb2.DiscoverySearchReply(correct=False)
+            if(not search_reply.correct):
+                return discovery_pb2.DiscoverySearchReply(correct=False)
                     
-                    return discovery_pb2.DiscoverySearchReply(correct=True, city=search_reply.city, temperature=search_reply.temperature, humidity=search_reply.humidity, cloudiness=search_reply.cloudiness)
+            return discovery_pb2.DiscoverySearchReply(correct=True, city=search_reply.city, temperature=search_reply.temperature, humidity=search_reply.humidity, cloudiness=search_reply.cloudiness)
                               
         except:
-            """
-            Il Discovery server ancora non è a conoscenza
-            delle informazioni relative al microservizio richiesto.
-            """
             return discovery_pb2.DiscoverySearchReply(correct=False)
 
 
@@ -91,32 +86,13 @@ class DiscoveryServicer(discovery_pb2_grpc.DiscoveryServiceServicer):
     def put(self, request, context):
 
         try:
-            """
-            Check to see if the microservice is already registered.
-            """
-            all_microservices_cache_names.index(request.serviceName)
+            # Registrazione nella cache della nuova istanza di microservizio
+            microservices[request.serviceName] = request.port
         except ValueError:
-
-            """
-            Microservice not registered.
-            Save info about port and name of the microservice.
-            """
-            try:
-                # da sostituire con il salvataggio su db
-                microservice = Microservice(request.serviceName, request.port)
-                microservices_db.append(microservice)
-            except Exception:
-                # Avviso il microservizio che si è verificato un errore nella PUT
-                return discovery_pb2.PutReply(result=False)
-
-            # in cache, locale per velocizzare
-            # Creazione della nuova istanza di microservizio
-            microservice = Microservice(request.serviceName, request.port)
-            # Registrazione nella cache della nuova istanza di microservizio            
-            all_microservices_cache.append(microservice)
-            all_microservices_cache_names.append(microservice.serviceName)
             file_log = open("put.txt", "a")
-            file_log.write("dentro discovery.py, put: "+request.serviceName)
+            file_log.write("\ndiscovery.py, put value error: "+ str(ValueError))
+            file_log.close()
+            return discovery_pb2.PutReply(result=False)
         
         # return Discovery_pb2.PutReply(result=True, list_server=discovery_servers)
         return discovery_pb2.PutReply(result=True)

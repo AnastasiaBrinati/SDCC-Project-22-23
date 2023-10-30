@@ -16,22 +16,10 @@ def menu():
 
 @app.route("/<string:username>/home", methods=('GET','POST'))
 def home(username):
-    """
-    Questa pop è necessaria poiché è possibile raggiungere la Home
-    da parti differenti dell'applicazione e di conseguenza posso
-    avere uno stato della sessione differente. Necessito di settare
-    il corretto stato della sessione.
-    """
     try:
         diz = session.pop(username)
         session[username] = username
     except Exception as e:
-        """
-        Si sta tentando di accedere alla home di un utente
-        senza prima aver effettuato correttamente l'accesso.
-        Infatti, non si ha alcuna sessione relativa al valore
-        di username.
-        """
         return redirect("/loginpage")
 
     # sarebbe carino se ad ogni avvio venisse mostrato il clima in una città diversa, ma on so se questo impatta le prestazion,
@@ -52,31 +40,18 @@ def login():
         data = request.get_json()
         username = data.get('username')
         password = data.get('password')
-        fp = open("errore_login.txt", "a")
-        fp.write("\n 0 che cosa c'è che non va?\n"+username)
-        fp.close()
 
         if(username == "" or password== ""):
             # campi non riempiti
-            fp = open("errore_login.txt", "a")
-            fp.write("\n 1 che cosa c'è che non va?\n")
-            fp.close()
-            redirect("/")
             return jsonify({"correct": False, "username": ""})
         
         response = sendLoginInfo(username, password)
         if(response==True):
-            fp = open("errore_login.txt", "a")
-            fp.write("\n 2 che cosa c'è che non va?\n")
-            fp.close()
             return jsonify({"correct": True, "username": username})
         
     except Exception as e:
         return jsonify({"message": "Si è verificato un errore: " + str(e)})
 
-    fp = open("errore_login.txt", "a")
-    fp.write("\n 3 che cosa c'è che non va?\n")
-    fp.close()
     redirect("/")
     return jsonify({"correct": False, "username": ""})
 

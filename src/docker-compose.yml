@@ -17,19 +17,35 @@ services:
     user: root
     ports:
       - 5000:5000
-    environment:
-      - GET_HOSTS_FROM=dns
-    labels:
-      kompose.service.type: LoadBalancer
 
   login:
     build: ./login
     user: root
     ports:
       - 50051:50051
+    volumes:
+      - ./:/src
+    environment:
+      - ./.env
+
   
   search:
     build: ./search
     user: root
     ports:
       - 50052:50052
+
+# utilities
+  
+  mysql:
+    build: ./db-login
+    volumes:
+      - todo-mysql-data:/var/lib/mysql
+    environment: 
+      MYSQL_ROOT_PASSWORD: a
+      MYSQL_DATABASE: users
+    ports:
+      - 3306:3306
+
+volumes:
+  todo-mysql-data:
