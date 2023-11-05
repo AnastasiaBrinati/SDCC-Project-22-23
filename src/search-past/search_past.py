@@ -39,7 +39,7 @@ class SearcherPast(searchpast_pb2_grpc.SearcherPastServicer):
         city = request.city
 
         # get cached data based on city name
-        res = getCachedCity(city)
+        res = getCachedCity(city+"_past")
         fp = open("cache.txt", "a")
         fp.write("ecco cosa c'era su redis rispetto alla city: "+str(res))
         fp.close()
@@ -98,7 +98,7 @@ class SearcherPast(searchpast_pb2_grpc.SearcherPastServicer):
                 'avg_clo': avg_clo
             }
             # Salva in cache
-            res = cacheCity(city, cityData)
+            res = cacheCity(city+"_past", cityData)
 
             return searchpast_pb2.SearchPastReply(city=city, max_temperature=float(max_temp), min_temperature=float(min_temp), avg_temperature=float(avg_temp), max_humidity=float(max_hum), min_humidity=float(min_hum), avg_humidity=float(avg_hum), avg_cloudcover=float(avg_clo))
 

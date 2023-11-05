@@ -1,13 +1,16 @@
 import time
 import grpc
+import ast
+import requests
+from circuitbreaker import circuit
 from concurrent import futures
 
 from proto import searchnow_pb2
 from proto import searchnow_pb2_grpc
+from cache import *
 import searchNowDiscovery
 
-import requests
-from circuitbreaker import circuit
+
 
 # who am I?
 # Port:
@@ -27,25 +30,38 @@ class SearcherNow(searchnow_pb2_grpc.SearcherNowServicer):
     # name default: name of the function
     @circuit(failure_threshold=3, expected_exception=requests.RequestException, fallback_function=negative_result)
     def Search(self, request, context):
-        api_key = "b8b7a2ac64b15fd3fd5f87d885b16e5b"  # Sostituisci con la tua chiave API di OpenWeatherMap
-        url = f"https://api.openweathermap.org/data/2.5/weather"
         city = request.city
 
-        params = {
-            "q": city,
-            "appid": api_key,
-            "units": "metric",  # Unità di misura metrica (Celsius, km/h)
-        }
+        res = getCachedCity(city+"_now")
+        if(res==None):
+            
+            api_key = "b8b7a2ac64b15fd3fd5f87d885b16e5b"  # Sostituisci con la tua chiave API di OpenWeatherMap
+            url = f"https://api.openweathermap.org/data/2.5/weather"
+            params = {
+                "q": city,
+                "appid": api_key,
+                "units": "metric",  # Unità di misura metrica (Celsius, km/h)
+            }
 
-        response = requests.get(url, params=params)
-        response.raise_for_status()
-        
-        data = response.json()
-        temp = data.get("main", {}).get("temp")
-        hum = data.get("main", {}).get("humidity")
-        cloud = data.get("weather", [])[0].get("description")
+            response = requests.get(url, params=params)
+            response.raise_for_status()
+            
+            data = response.json()
+            temp = data.get("main", {}).get("temp")
+            hum = data.get("main", {}).get("humidity")
+            cloud = data.get("weather", [])[0].get("description")
 
-        return searchnow_pb2.SearchNowReply(city=city, temperature=temp, humidity=hum, cloudiness=cloud)
+            cityData = {
+                'temp': temp,
+                'hum': hum,
+                'cloud': cloud
+            }
+            
+            res = cacheCity(city+"_now", cityData)
+            return searchnow_pb2.SearchNowReply(city=city, temperature=temp, humidity=hum, cloudiness=cloud)
+        else:
+            cityData = ast.literal_eval(ast.literal_eval(str(res)[1:]))
+            return searchnow_pb2.SearchNowReply(city=city, temperature=cityData['temp'], humidity=cityData['hum'], cloudiness=cityData['cloud'])
     
 
 # Creazione del server RPC

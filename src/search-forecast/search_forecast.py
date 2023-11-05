@@ -1,13 +1,14 @@
 import time
 import grpc
+import ast
+import requests
+from circuitbreaker import circuit
 from concurrent import futures
 
 from proto import searchforecast_pb2
 from proto import searchforecast_pb2_grpc
+from cache import *
 import searchForecastDiscovery
-
-import requests
-from circuitbreaker import circuit
 
 # who am I?
 # Port:
@@ -29,57 +30,64 @@ class SearcherForecast(searchforecast_pb2_grpc.SearcherForecastServicer):
     def Search(self, request, context):
 
         city = request.city
-        # Imposta la chiave API di OpenWeatherMap
-        api_key = "b8b7a2ac64b15fd3fd5f87d885b16e5b"
-        # Esegui una richiesta per ottenere i dati meteo della prossima settimana
-        url = "https://api.openweathermap.org/data/2.5/forecast"
-        params = {
-            "q": city,
-            "appid": api_key,
-            "units": "metric"  # Unità di misura metrica (Celsius, km/h)
-        }
 
-        response = requests.get(url, params=params)
-        response.raise_for_status()
-        # se request non va a buon fine, dovrebbe aprirsi il circuit
-        data = response.json()
-   
-        # Estrai la lista delle previsioni giornaliere
-        daily_forecasts = []
-        current_date = None
-   
-        for forecast in data['list']:
-            forecast_date = forecast['dt_txt'].split()[0]
-   
-            # Se la data è cambiata, crea un nuovo dizionario per il giorno corrente
-            if forecast_date != current_date:
-                current_date = forecast_date
-                daily_forecast = {
-                    'date': forecast_date,
-                    'max_temperature': -float('inf'),
-                    'min_temperature': float('inf'),
-                    'humidity': 0,
-                    'weather': [],
-                    'wind_speed': []
-                }
-                daily_forecasts.append(daily_forecast)
-   
-            # Aggiorna i dati del giorno corrente
-            daily_forecast['max_temperature'] = max(daily_forecast['max_temperature'], forecast['main']['temp_max'])
-            daily_forecast['min_temperature'] = min(daily_forecast['min_temperature'], forecast['main']['temp_min'])
-            daily_forecast['humidity'] += forecast['main']['humidity']
-            daily_forecast['weather'].append(forecast['weather'][0]['description'])
-            daily_forecast['wind_speed'].append(forecast['wind']['speed'])
-   
-        # Calcola le medie e le mode
-        for daily_forecast in daily_forecasts:
-            daily_forecast['humidity'] /= len(daily_forecast['weather'])
-            daily_forecast['weather'] = max(set(daily_forecast['weather']), key=daily_forecast['weather'].count)
-            daily_forecast['wind_speed'] = sum(daily_forecast['wind_speed']) / len(daily_forecast['wind_speed'])
+        res = getCachedCity(city+"_forecast")
+        if(res==None):
+            # Imposta la chiave API di OpenWeatherMap
+            api_key = "b8b7a2ac64b15fd3fd5f87d885b16e5b"
+            # Esegui una richiesta per ottenere i dati meteo della prossima settimana
+            url = "https://api.openweathermap.org/data/2.5/forecast"
+            params = {
+                "q": city,
+                "appid": api_key,
+                "units": "metric"  # Unità di misura metrica (Celsius, km/h)
+            }
 
+            response = requests.get(url, params=params)
+            response.raise_for_status()
+            # se request non va a buon fine, dovrebbe aprirsi il circuit
+            data = response.json()
+    
+            # Estrai la lista delle previsioni giornaliere
+            daily_forecasts = []
+            current_date = None
+    
+            for forecast in data['list']:
+                forecast_date = forecast['dt_txt'].split()[0]
+    
+                # Se la data è cambiata, crea un nuovo dizionario per il giorno corrente
+                if forecast_date != current_date:
+                    current_date = forecast_date
+                    daily_forecast = {
+                        'date': forecast_date,
+                        'max_temperature': -float('inf'),
+                        'min_temperature': float('inf'),
+                        'humidity': 0,
+                        'weather': [],
+                        'wind_speed': []
+                    }
+                    daily_forecasts.append(daily_forecast)
+    
+                # Aggiorna i dati del giorno corrente
+                daily_forecast['max_temperature'] = max(daily_forecast['max_temperature'], forecast['main']['temp_max'])
+                daily_forecast['min_temperature'] = min(daily_forecast['min_temperature'], forecast['main']['temp_min'])
+                daily_forecast['humidity'] += forecast['main']['humidity']
+                daily_forecast['weather'].append(forecast['weather'][0]['description'])
+                daily_forecast['wind_speed'].append(forecast['wind']['speed'])
+    
+            # Calcola le medie e le mode
+            for daily_forecast in daily_forecasts:
+                daily_forecast['humidity'] /= len(daily_forecast['weather'])
+                daily_forecast['weather'] = max(set(daily_forecast['weather']), key=daily_forecast['weather'].count)
+                daily_forecast['wind_speed'] = sum(daily_forecast['wind_speed']) / len(daily_forecast['wind_speed'])
 
-        return searchforecast_pb2.SearchForecastReply(city=city, day1=daily_forecasts[0], day2=daily_forecasts[1], day3=daily_forecasts[2], day4=daily_forecasts[3], day5=daily_forecasts[4])
-
+            ### cacha
+            res = cacheCity(city+"_forecast", daily_forecasts)
+            return searchforecast_pb2.SearchForecastReply(city=city, day1=daily_forecasts[0], day2=daily_forecasts[1], day3=daily_forecasts[2], day4=daily_forecasts[3], day5=daily_forecasts[4])
+        else:
+            daily_forecasts = ast.literal_eval(ast.literal_eval(str(res)[1:]))
+            return searchforecast_pb2.SearchForecastReply(city=city, day1=daily_forecasts[0], day2=daily_forecasts[1], day3=daily_forecasts[2], day4=daily_forecasts[3], day5=daily_forecasts[4])
+    
 # To monitor your circuits: 
 # CircuitBreakerMonitor.get_circuits()
 # because they auto-report infos 

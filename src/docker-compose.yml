@@ -18,12 +18,6 @@ services:
     ports:
       - 5000:5000
 
-  search-forecast:
-    build: ./search-forecast
-    user: root
-    ports:
-      - 50054:50054
-
   login:
     build: ./login
     user: root
@@ -47,11 +41,16 @@ services:
     user: root
     ports:
       - 50053:50053
-    environment:
-      REDIS_HOST: cache
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    depends_on:
+      - cache
 
+  search-forecast:
+    build: ./search-forecast
+    user: root
+    ports:
+      - 50054:50054
+    depends_on:
+      - cache
 
 # utilities
   
