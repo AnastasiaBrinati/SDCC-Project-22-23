@@ -1,7 +1,7 @@
 from flask import Flask, redirect, render_template, request, session, jsonify
 from flask_session import Session
 from loginRPC import sendLoginInfo
-from searchRPC import sendCityInfo
+from searchRPC import weatherNow, weatherPast, weatherForecast
 
 app = Flask(__name__)
 app.debug = False
@@ -57,8 +57,8 @@ def login():
 
 
 # redirecting search button
-@app.route('/search', methods=('GET','POST'))
-def search():
+@app.route('/search_now', methods=('GET','POST'))
+def search_now():
 
     try:
         data = request.get_json()
@@ -69,20 +69,66 @@ def search():
             redirect("/")
             return jsonify({"correct": False, "city": ""})
         
-        response = sendCityInfo(city)
-
-        #if(response==True):
-        # per ora sempre True
+        response = weatherNow(city)
+        fp=open("errorinow.txt", "a")
+        fp.write("ecco la response: "+str(response))
+        fp.close()
         return jsonify({"correct": True, "city": city, "temperature": str(response[0]), "humidity":str(response[1]), "cloudiness":str(response[2])})
         
     except Exception as e:
         return jsonify({"message": "Si è verificato un errore: " + str(e)})
 
+# redirecting past search button
+@app.route('/search_past', methods=('GET','POST'))
+def search_past():
 
-    #redirect("/")
-    #return jsonify({"city": str(city), "temperature": str(response[0]), "humidity":str(response[1]), "cloudiness":str(response[2])})
+    try:
+        data = request.get_json()
+        city = data.get('city')
 
+        if(city == ""):
+            # campi non riempiti
+            redirect("/")
+            return jsonify({"correct": False, "city": ""})
+        
+        response = weatherPast(city)
 
+        fp = open("errori.txt", "a")
+        fp.write("dentro search_past: "+str(response))
+        fp.close()
+        return jsonify({"correct": True, "city": city, "max_temperature": str(response[0]), "min_temperature":str(response[1]), "avg_temperature":str(response[2]), "max_humidity": str(response[3]), "min_humidity":str(response[4]), "avg_humidity":str(response[5]),  "avg_cloudcover":str(response[6])})
+        
+    except Exception as e:
+        return jsonify({"correct": False, "message": "Si è verificato un errore: " + str(e)})
+    
+# redirecting forecast search button
+@app.route('/search_forecast', methods=('GET','POST'))
+def search_forecast():
+
+    try:
+        data = request.get_json()
+        city = data.get('city')
+
+        fp=open("erroriforecast.txt", "a")
+        fp.write("ecco la city: "+city)
+        fp.close()
+
+        if(city == ""):
+            # campi non riempiti
+            redirect("/")
+            return jsonify({"correct": False, "city": ""})
+        
+        days = weatherForecast(city)
+        fp=open("erroriforecast.txt", "a")
+        fp.write("ecco la response: "+str(days))
+        fp.close()
+        return jsonify({"correct": True, "city": city, "day1": days[0], "day2": days[1], "day3": days[2], "day4": days[3], "day5": days[4]})
+        
+    except Exception as e:
+        fp=open("erroriforecast.txt", "a")
+        fp.write("ecco l' exception: "+str(e))
+        fp.close()
+        return jsonify({"message": "Si è verificato un errore: " + str(e)})
 
 #logout
 @app.route("/logout/<input_parameter>", methods=('GET','POST'))

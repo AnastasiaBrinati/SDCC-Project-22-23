@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package proto;
+
+service SearcherForecast {
+    rpc Search(SearchForecastRequest) returns (SearchForecastReply) {}
+}
+
+message SearchForecastRequest{
+    string city = 1;
+}
+
+message Day{
+	string date = 1;
+	float min_temperature = 2;
+	float max_temperature = 3;
+  float humidity = 4;
+  string weather = 5;
+	float wind_speed = 6;
+}
+
+message SearchForecastReply{
+  string city = 2;
+  Day day1 = 3;
+	Day day2 = 4;
+	Day day3 = 5;
+	Day day4 = 6;
+	Day day5 = 7;
+}

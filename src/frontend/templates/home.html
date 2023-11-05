@@ -51,7 +51,6 @@
             <h2 id='cityname' style="font-size: 25px">{{ city }}</h2>
             <h2 id="day-of-week"></h2>
             <img id='weatherpic' src="..\static\images\sun.png">
-            <p>Last Update: <span id='todayDateTime' class="temperature"></span></p>
             <p>Temp: <span id='temp' class="temperature">{{ temp }}</span></p>
             <p>Humidity: <span id='hum' class="temperature">{{ hum }}</span></p>
             <p>Cloudiness: <span id='cloud' class="temperature">{{ cloud }}</span></p>
@@ -65,57 +64,85 @@
     <section class="container-title">
         <h2>Forecast</h2>
         <p>Check out weather forecast for the next 7 days.</p>
+        <form onsubmit="event.preventDefault();">
+                <section>
+                    <input class="form-control" placeholder="Insert city name" type="text" id="city-search-forecast" name="inputCity" rows="1" required>
+                    <button class="rounded-button" type="button" id="search_btn_forecast">Search</button>
+                </section>
+            
+        </form>
     </section>
     <section class="weather-container">
-        <div class="day-card" id="lunedì">
-            <h2>Lunedì</h2>
-            <img src="..\static\images\storm.png" alt="Nome della città">
-            <p>Max temp: <span class="temperature">25°C</span></p>
+        <div class="day-card" id="day0">
+            <h2 id='date0'></h2>
+            <img id="img0">
+            <p>Max temp: <span class="temperature" id='max_temp0'></span></p>
+            <p>Min temp: <span class="temperature" id='min_temp0'></span></p>
+            <p>Wind speed: <span class="temperature" id='wind_speed0'></span></p>
+            <p>Humidity: <span class="temperature" id='humidity0'></span></p>
+            <p>Weather: <span class="temperature" id='weather0'></span></p>
         </div>
-        <div class="day-card" id="'martedì">
-            <h2>Martedì</h2>
-            <img src="..\static\images\cloudy.png" alt="Nome della città">
-            <p>Max temp: <span class="temperature">22°C</span></p>
+        <div class="day-card" id="day1">
+            <h2 id='date1'></h2>
+            <img id="img1">
+            <p>Max temp: <span class="temperature" id='max_temp1'></span></p>
+            <p>Min temp: <span class="temperature" id='min_temp1'></span></p>
+            <p>Wind speed: <span class="temperature" id='wind_speed1'></span></p>
+            <p>Humidity: <span class="temperature" id='humidity1'></span></p>
+            <p>Weather: <span class="temperature" id='weather1'></span></p>
         </div>
-        <div class="day-card">
-            <h2>Mercoledì</h2>
-            <img src="..\static\images\sun.png" alt="Nome della città">
-            <p>Max temp: <span class="temperature">24°C</span></p>
+        <div class="day-card" id="day2">
+            <h2 id='date2'></h2>
+            <img id="img2">
+            <p>Max temp: <span class="temperature" id='max_temp2'></span></p>
+            <p>Min temp: <span class="temperature" id='min_temp2'></span></p>
+            <p>Wind speed: <span class="temperature" id='wind_speed2'></span></p>
+            <p>Humidity: <span class="temperature" id='humidity2'></span></p>
+            <p>Weather: <span class="temperature" id='weather2'></span></p>
         </div>
-        <div class="day-card">
-            <h2>Giovedì</h2>
-            <img src="..\static\images\cloudy.png" alt="Nome della città">
-            <p>Max temp: <span class="temperature">25°C</span></p>
+        <div class="day-card" id="day3">
+            <h2 id='date3'></h2>
+            <img id="img3">
+            <p>Max temp: <span class="temperature" id='max_temp3'></span></p>
+            <p>Min temp: <span class="temperature" id='min_temp3'></span></p>
+            <p>Wind speed: <span class="temperature" id='wind_speed3'></span></p>
+            <p>Humidity: <span class="temperature" id='humidity3'></span></p>
+            <p>Weather: <span class="temperature" id='weather3'></span></p>
         </div>
-        <div class="day-card">
-            <h2>Venerdì</h2>
-            <img src="..\static\images\storm.png" alt="Nome della città">
-            <p>Max temp: <span class="temperature">25°C</span></p>
+        <div class="day-card" id="day4">
+            <h2 id='date4'></h2>
+            <img id="img4">
+            <p>Max temp: <span class="temperature" id='max_temp4'></span></p>
+            <p>Min temp: <span class="temperature" id='min_temp4'></span></p>
+            <p>Wind speed: <span class="temperature" id='wind_speed4'></span></p>
+            <p>Humidity: <span class="temperature" id='humidity4'></span></p>
+            <p>Weather: <span class="temperature" id='weather4'></span></p>
         </div>
-        <div class="day-card">
-            <h2>Sabato</h2>
-            <img src="..\static\images\sun.png" alt="Nome della città">
-            <p>Max temp: <span class="temperature">25°C</span></p>
-        </div>
-        <div class="day-card">
-            <h2>Domenica</h2>
-            <img src="..\static\images\cloudyrain.png" alt="Nome della città">
-            <p>Max temp: <span class="temperature">25°C</span></p>
-        </div>
-        <!-- Ripeti lo stesso modello per gli altri giorni della settimana -->
     </section>
     <section class="container-title">
+        
         <h2>Statistics</h2>
-        <p>Check out weather statistics for the past 14 days.</p>
+        <p>Check out weather statistics for the past 7 days.</p>
+        <form>
+                <section>
+                    <input class="form-control" placeholder="Insert city name" type="text" id="city-search-past" name="inputCity" rows="1" required>
+                        <p>
+                        <button class="rounded-button" type="button" id="search_btn_past">Search</button>
+                        </p> 
+                </section>
+            
+        </form>
     </section>
     <section class="weather-container">
-        <div class="stats-card">
-            <p>Average temp: <span class="temperature">25°C</span></p>
-            <p>Average humidity: <span class="temperature">40%</span></p>
-            <p>Average temp: <span class="temperature">25°C</span></p>
-            <p>Average temp: <span class="temperature">25°C</span></p>
+        <div class="stats-card" id="statsCard">
+            <p>Max temp: <span class="temperature" id="past_max_temperature"></span></p>
+            <p>Min temp: <span class="temperature" id="past_min_temperature"></span></p>
+            <p>Average temp: <span class="temperature" id="past_avg_temperature"></span></p>
+            <p>Max humidity: <span class="temperature" id="past_max_humidity"></span></p>
+            <p>Min humidity: <span class="temperature" id="past_min_humidity"></span></p>
+            <p>Average humidity: <span class="temperature" id="past_avg_humidity"></span></p>
+            <p>Average cloudcover: <span class="temperature" id="past_avg_cloudcover"></span></p>
         </div>
-    </h1>
     </section>
     
     <footer>
@@ -137,17 +164,87 @@
 
 
 <script>
+        function imageStr(cloudiness) {
+        switch (cloudiness) {
+                            case "overcast clouds":
+                                return "/static/images/cloudy.png";
+                                break;
+                            case "light rain":
+                                return "/static/images/cloudy2.png";
+                                break;
+                            case "secco":
+                                return "/static/images/cloudy.png";
+                                break;
+                            case "clear sky":
+                                return "/static/images/sun.png";
+                                break;
+                            case "few clouds":
+                                return "/static/images/storm.png";
+                                break;
+                            case "rain":
+                                return "/static/images/storm.png";
+                                break;
+                            case "broken clouds":
+                                return "/static/images/cloudy.png";
+                                break;
+                            case "scattered clouds":
+                                return "/static/images/cloudy.png";
+                                break;
+                            case "light snow":
+                                return "/static/images/storm.png";
+                                break;
+                            case "light intensity shower rain":
+                                return "/static/images/cloudy2.png";
+                            default:
+                                return "/static/images/cloudy.png";
+                                break;
+                        } 
+        }
 
+    document.addEventListener("DOMContentLoaded", function () {
+        var searchButton = document.getElementById('search_btn_past');
+        searchButton.addEventListener('click', function () {
+            
+            var cityform = document.getElementById('city-search-past');
+            var city = cityform.value;
+
+            fetch('/search_past', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ city: city })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+
+                    
+                    if(data.correct){
+
+                        // Aggiorna gli elementi HTML con i dati estratti 
+                        document.getElementById("past_max_temperature").innerHTML = data.max_temperature + "°C";
+                        document.getElementById("past_min_temperature").innerHTML = data.min_temperature + "°C";
+                        document.getElementById("past_avg_temperature").innerHTML = data.avg_temperature + "°C";
+                        document.getElementById("past_max_humidity").innerHTML = data.max_humidity + "%";
+                        document.getElementById("past_min_humidity").innerHTML = data.min_humidity + "%";
+                        document.getElementById("past_avg_humidity").innerHTML = data.avg_humidity + "%";
+                        document.getElementById("past_avg_cloudcover").innerHTML = data.avg_cloudcover + "%";
+                    }
+                    // Assicurati di analizzare correttamente la risposta JSON
+
+                })
+                .catch(error => console.error('Errore nella richiesta: ' + error));
+        });
+    });
 
     document.addEventListener('DOMContentLoaded', function () {
         var launchButton = document.getElementById('search_btn');
-
         launchButton.addEventListener('click', function () {
 
             var cityform = document.getElementById('cityform');
             var city = cityform.value;
 
-            fetch('/search', {
+            fetch('/search_now', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -167,41 +264,71 @@
                         form4.innerHTML = data.cloudiness;
 
                         var cloudinessPic = document.getElementById('weatherpic');
+                        cloudinessPic.src = imageStr(data.cloudiness);
 
-
-                        switch (data.cloudiness) {
-                            case "overcast clouds":
-                                cloudinessPic.src = "/static/images/cloudy.png";
-                                break;
-                            case "light rain":
-                                cloudinessPic.src = "/static/images/cloudy2.png";
-                                break;
-                            case "secco":
-                                cloudinessPic.src = "/static/images/cloudy.png";
-                                break;
-                            case "clear sky":
-                                cloudinessPic.src = "/static/images/sun.png";
-                                break;
-                            case "few clouds":
-                                cloudinessPic.src = "/static/images/storm.png";
-                                break;
-                            case "rain":
-                                cloudinessPic.src = "/static/images/storm.png";
-                                break;
-                            case "broken clouds":
-                                cloudinessPic.src = "/static/images/cloudy.png";
-                                break;
-                            case "scattered clouds":
-                                cloudinessPic.src = "/static/images/cloudy.png";
-                                break;
-                            case "light snow":
-                                cloudinessPic.src = "/static/images/storm.png";
-                            default:
-                                cloudinessPic.src = "/static/images/cloudy.png";
-                        }
                     }
             });
         
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var searchButton = document.getElementById('search_btn_forecast');
+        searchButton.addEventListener('click', function () {
+            
+            var city = document.getElementById('city-search-forecast').value;
+
+            fetch('/search_forecast', {
+                method: 'POST',
+                body: JSON.stringify({ city: city }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                    if (data.correct) {
+                        days = [data.day1, data.day2, data.day3, data.day4, data.day5]
+                        for (var i = 0; i < 5; i++) {
+                            // var forecast = bodyData[i];
+                            var day = days[i]
+                            //var date = day.date;
+                            var date = day.date
+                            var max_temp = day.max_temperature;
+                            var min_temp = day.min_temperature;
+                            var wind = day.wind_speed;
+                            var humidity = day.humidity;
+                            var weather = day.weather;
+
+                        
+                            // Aggiorna gli elementi HTML con i dati estratti
+                            var dateElement = document.getElementById('date'+i);
+                            dateElement.innerHTML = date;
+                            
+                            var maxTempElement = document.getElementById("max_temp"+i);
+                            maxTempElement.innerHTML = max_temp.toFixed(2) + "°C";
+
+                            var minTempElement = document.getElementById("min_temp"+i);
+                            minTempElement.innerHTML = min_temp.toFixed(2) + "°C";
+     
+                            var humidityElement = document.getElementById("humidity"+i);
+                            humidityElement.innerHTML = humidity.toFixed(2) + "%";
+
+                            var windElement = document.getElementById("wind_speed"+i);
+                            windElement.innerHTML = wind.toFixed(2) + "km/h";
+
+                            var weatherElement = document.getElementById("weather"+i);
+                            weatherElement.innerHTML = weather;
+
+                            var imgElement = document.getElementById('img'+i);
+                            imgElement.src = imageStr(data.weather);
+
+                        }
+                    } else {
+                        console.error('Nessuna previsione trovata nell\'array dei dati previsionali.');
+                    }
+            })
+            .catch(error => console.error('Errore nella richiesta: ' + error));
         });
     });
 

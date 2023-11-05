@@ -19,10 +19,20 @@ class DiscoveryServiceStub(object):
                 request_serializer=proto_dot_discovery__pb2.DiscoveryLoginRequest.SerializeToString,
                 response_deserializer=proto_dot_discovery__pb2.DiscoveryLoginReply.FromString,
                 )
-        self.discoverySearch = channel.unary_unary(
-                '/proto.DiscoveryService/discoverySearch',
-                request_serializer=proto_dot_discovery__pb2.DiscoverySearchRequest.SerializeToString,
-                response_deserializer=proto_dot_discovery__pb2.DiscoverySearchReply.FromString,
+        self.discoverySearchPast = channel.unary_unary(
+                '/proto.DiscoveryService/discoverySearchPast',
+                request_serializer=proto_dot_discovery__pb2.DiscoverySearchPastRequest.SerializeToString,
+                response_deserializer=proto_dot_discovery__pb2.DiscoverySearchPastReply.FromString,
+                )
+        self.discoverySearchNow = channel.unary_unary(
+                '/proto.DiscoveryService/discoverySearchNow',
+                request_serializer=proto_dot_discovery__pb2.DiscoverySearchNowRequest.SerializeToString,
+                response_deserializer=proto_dot_discovery__pb2.DiscoverySearchNowReply.FromString,
+                )
+        self.discoverySearchForecast = channel.unary_unary(
+                '/proto.DiscoveryService/discoverySearchForecast',
+                request_serializer=proto_dot_discovery__pb2.DiscoverySearchForecastRequest.SerializeToString,
+                response_deserializer=proto_dot_discovery__pb2.DiscoverySearchForecastReply.FromString,
                 )
         self.put = channel.unary_unary(
                 '/proto.DiscoveryService/put',
@@ -40,7 +50,19 @@ class DiscoveryServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def discoverySearch(self, request, context):
+    def discoverySearchPast(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def discoverySearchNow(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def discoverySearchForecast(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -60,10 +82,20 @@ def add_DiscoveryServiceServicer_to_server(servicer, server):
                     request_deserializer=proto_dot_discovery__pb2.DiscoveryLoginRequest.FromString,
                     response_serializer=proto_dot_discovery__pb2.DiscoveryLoginReply.SerializeToString,
             ),
-            'discoverySearch': grpc.unary_unary_rpc_method_handler(
-                    servicer.discoverySearch,
-                    request_deserializer=proto_dot_discovery__pb2.DiscoverySearchRequest.FromString,
-                    response_serializer=proto_dot_discovery__pb2.DiscoverySearchReply.SerializeToString,
+            'discoverySearchPast': grpc.unary_unary_rpc_method_handler(
+                    servicer.discoverySearchPast,
+                    request_deserializer=proto_dot_discovery__pb2.DiscoverySearchPastRequest.FromString,
+                    response_serializer=proto_dot_discovery__pb2.DiscoverySearchPastReply.SerializeToString,
+            ),
+            'discoverySearchNow': grpc.unary_unary_rpc_method_handler(
+                    servicer.discoverySearchNow,
+                    request_deserializer=proto_dot_discovery__pb2.DiscoverySearchNowRequest.FromString,
+                    response_serializer=proto_dot_discovery__pb2.DiscoverySearchNowReply.SerializeToString,
+            ),
+            'discoverySearchForecast': grpc.unary_unary_rpc_method_handler(
+                    servicer.discoverySearchForecast,
+                    request_deserializer=proto_dot_discovery__pb2.DiscoverySearchForecastRequest.FromString,
+                    response_serializer=proto_dot_discovery__pb2.DiscoverySearchForecastReply.SerializeToString,
             ),
             'put': grpc.unary_unary_rpc_method_handler(
                     servicer.put,
@@ -98,7 +130,7 @@ class DiscoveryService(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def discoverySearch(request,
+    def discoverySearchPast(request,
             target,
             options=(),
             channel_credentials=None,
@@ -108,9 +140,43 @@ class DiscoveryService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/proto.DiscoveryService/discoverySearch',
-            proto_dot_discovery__pb2.DiscoverySearchRequest.SerializeToString,
-            proto_dot_discovery__pb2.DiscoverySearchReply.FromString,
+        return grpc.experimental.unary_unary(request, target, '/proto.DiscoveryService/discoverySearchPast',
+            proto_dot_discovery__pb2.DiscoverySearchPastRequest.SerializeToString,
+            proto_dot_discovery__pb2.DiscoverySearchPastReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def discoverySearchNow(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/proto.DiscoveryService/discoverySearchNow',
+            proto_dot_discovery__pb2.DiscoverySearchNowRequest.SerializeToString,
+            proto_dot_discovery__pb2.DiscoverySearchNowReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def discoverySearchForecast(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/proto.DiscoveryService/discoverySearchForecast',
+            proto_dot_discovery__pb2.DiscoverySearchForecastRequest.SerializeToString,
+            proto_dot_discovery__pb2.DiscoverySearchForecastReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

@@ -5,7 +5,11 @@ package proto;
 service DiscoveryService {
 
 	rpc discoveryLogin(DiscoveryLoginRequest) returns (DiscoveryLoginReply);
-	rpc discoverySearch(DiscoverySearchRequest) returns (DiscoverySearchReply);
+
+	rpc discoverySearchPast(DiscoverySearchPastRequest) returns (DiscoverySearchPastReply);
+	rpc discoverySearchNow(DiscoverySearchNowRequest) returns (DiscoverySearchNowReply);
+	rpc discoverySearchForecast(DiscoverySearchForecastRequest) returns (DiscoverySearchForecastReply);
+
 	rpc put(PutRequest) returns (PutReply);
 
 }
@@ -20,16 +24,53 @@ message DiscoveryLoginReply {
 	bool correct = 1;
 }
 
-message DiscoverySearchRequest {
+message DiscoverySearchNowRequest {
+	string city = 1;
+}
+message DiscoverySearchPastRequest {
+	string city = 1;
+}
+message DiscoverySearchForecastRequest {
 	string city = 1;
 }
 
-message DiscoverySearchReply {
+message DiscoverySearchPastReply {
+	bool correct = 1;
+  string city = 2;
+  float max_temperature = 3;
+  float min_temperature = 4;
+  float avg_temperature = 5;
+  float max_humidity = 6;  
+	float min_humidity = 7;
+  float avg_humidity = 8;
+	float avg_cloudcover = 9;
+}
+
+message DiscoverySearchNowReply {
 	bool correct = 1;
   string city = 2;
   float temperature = 3;
   float humidity = 4;
   string cloudiness = 5;
+}
+
+message DeliveryDay{
+	string date = 1;
+	float min_temperature = 2;
+	float max_temperature = 3;
+  float humidity = 4;
+  string weather = 5;
+	float wind_speed = 6;
+}
+
+message DiscoverySearchForecastReply {
+	bool correct = 1;
+  string city = 2;
+  DeliveryDay day1 = 3;
+	DeliveryDay day2 = 4;
+	DeliveryDay day3 = 5;
+	DeliveryDay day4 = 6;
+	DeliveryDay day5 = 7;
 }
 
 message PutRequest {

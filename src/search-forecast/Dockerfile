@@ -12,4 +12,4 @@ COPY . .
 RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 50052
-CMD ["python3", "./search.py"]
+CMD ["python3", "./search_forecast.py"]

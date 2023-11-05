@@ -2,16 +2,15 @@ syntax = "proto3";
 
 package proto;
 
-service Searcher {
-    rpc Search(SearchRequest) returns (SearchReply) {}
+service SearcherNow {
+    rpc Search(SearchNowRequest) returns (SearchNowReply) {}
 }
 
-message SearchRequest{
+message SearchNowRequest{
     string city = 1;
 }
 
-message SearchReply{
-    bool correct = 1;
+message SearchNowReply{
     string city = 2;
     float temperature = 3;
     float humidity = 4;

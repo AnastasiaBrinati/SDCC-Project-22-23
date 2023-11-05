@@ -18,6 +18,12 @@ services:
     ports:
       - 5000:5000
 
+  search-forecast:
+    build: ./search-forecast
+    user: root
+    ports:
+      - 50054:50054
+
   login:
     build: ./login
     user: root
@@ -28,12 +34,24 @@ services:
     environment:
       - ./.env
 
-  
-  search:
-    build: ./search
+  search-past:
+    build: ./search-past
     user: root
     ports:
       - 50052:50052
+    depends_on:
+      - cache
+
+  search-now:
+    build: ./search-now
+    user: root
+    ports:
+      - 50053:50053
+    environment:
+      REDIS_HOST: cache
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+
 
 # utilities
   
@@ -47,5 +65,16 @@ services:
     ports:
       - 3306:3306
 
+  cache:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    volumes: 
+      - cache:/data
+
 volumes:
   todo-mysql-data:
+  cache:
+    driver: local

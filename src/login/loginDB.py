@@ -11,13 +11,7 @@ inserite.
 """
 def checkCredentials(username, password):
 
-    fp = open("connection.txt", "a")
-    fp.write("mi sto connettendo..\n")
-    fp.close()
     con = mysql.connector.connect(user='root',password='a',host='mysql',database='users')
-    fp = open("connection.txt", "a")
-    fp.write(username+" connessa..\n")
-    fp.close()
     c = con.cursor()
 
     users = []    

@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package proto;
+
+service SearcherPast {
+    rpc Search(SearchPastRequest) returns (SearchPastReply) {}
+}
+
+message SearchPastRequest{
+    string city = 1;
+}
+
+message SearchPastReply{
+    string city = 2;
+    float max_temperature = 3;
+    float min_temperature = 4;
+    float avg_temperature = 5;
+    float max_humidity = 6;  
+	float min_humidity = 7;
+    float avg_humidity = 8;
+	float avg_cloudcover = 9;
+}

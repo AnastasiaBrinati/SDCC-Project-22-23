@@ -2,10 +2,10 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from proto import search_pb2 as proto_dot_search__pb2
+from proto import searchforecast_pb2 as proto_dot_searchforecast__pb2
 
 
-class SearcherStub(object):
+class SearcherForecastStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -15,13 +15,13 @@ class SearcherStub(object):
             channel: A grpc.Channel.
         """
         self.Search = channel.unary_unary(
-                '/proto.Searcher/Search',
-                request_serializer=proto_dot_search__pb2.SearchRequest.SerializeToString,
-                response_deserializer=proto_dot_search__pb2.SearchReply.FromString,
+                '/proto.SearcherForecast/Search',
+                request_serializer=proto_dot_searchforecast__pb2.SearchForecastRequest.SerializeToString,
+                response_deserializer=proto_dot_searchforecast__pb2.SearchForecastReply.FromString,
                 )
 
 
-class SearcherServicer(object):
+class SearcherForecastServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def Search(self, request, context):
@@ -31,21 +31,21 @@ class SearcherServicer(object):
         raise NotImplementedError('Method not implemented!')
 
 
-def add_SearcherServicer_to_server(servicer, server):
+def add_SearcherForecastServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'Search': grpc.unary_unary_rpc_method_handler(
                     servicer.Search,
-                    request_deserializer=proto_dot_search__pb2.SearchRequest.FromString,
-                    response_serializer=proto_dot_search__pb2.SearchReply.SerializeToString,
+                    request_deserializer=proto_dot_searchforecast__pb2.SearchForecastRequest.FromString,
+                    response_serializer=proto_dot_searchforecast__pb2.SearchForecastReply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'proto.Searcher', rpc_method_handlers)
+            'proto.SearcherForecast', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
  # This class is part of an EXPERIMENTAL API.
-class Searcher(object):
+class SearcherForecast(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
@@ -59,8 +59,8 @@ class Searcher(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/proto.Searcher/Search',
-            proto_dot_search__pb2.SearchRequest.SerializeToString,
-            proto_dot_search__pb2.SearchReply.FromString,
+        return grpc.experimental.unary_unary(request, target, '/proto.SearcherForecast/Search',
+            proto_dot_searchforecast__pb2.SearchForecastRequest.SerializeToString,
+            proto_dot_searchforecast__pb2.SearchForecastReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
