@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+    <title>Cloudy Days - Previsioni Meteo</title>
+</head>
+    
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var launchButton = document.getElementById('login_btn');
+    console.log('before Login function.');
+    launchButton.addEventListener('click', function () {
+        console.log('Login function.');
+        var usernameform = document.getElementById('usernameform');
+        var passwordform = document.getElementById('passwordform');
+        var username = usernameform.value;
+        var password = passwordform.value;
+
+        var url = 'https://ek340ix8u3.execute-api.us-east-1.amazonaws.com/dev/login';
+
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify({ username: username, password: password }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Data:', data);
+
+            // Analizza il campo "body" contenente una stringa JSON
+            var bodyData = JSON.parse(data.body);
+
+            if (data.statusCode == 200) {
+                var usernamelab = document.getElementById('lab3');
+                usernamelab.innerHTML = bodyData.message;
+                usernamelab.style.display = "block";
+
+                var button1 = document.getElementById("login_btn");
+                var button2 = document.getElementById("logout_btn");
+                button1.style.display = "none";
+                button2.style.display = "block";
+                button2.style.float = "right";
+
+                // Nascondi il modulo di login
+                var loginForm = document.getElementById("loginForm");
+                loginForm.style.display = "none";
+
+                // Aggiorna l'elenco delle città preferite
+                var favoriteCitiesList = document.getElementById('favoriteCitiesList');
+                favoriteCitiesList.innerHTML = ""; 
+
+                if (bodyData.favorite_cities && Array.isArray(bodyData.favorite_cities)) {
+                    // Aggiungi le città preferite come elementi della lista
+                    bodyData.favorite_cities.forEach(function(city) {
+                        var cityItem = document.createElement('li');
+                        cityItem.textContent = city;
+                        cityItem.classList.add('clickable'); 
+                        favoriteCitiesList.appendChild(cityItem);
+                
+                        // Aggiungi un gestore di eventi per gestire il clic sulla città
+                        cityItem.addEventListener('click', function() {
+                            // Chiama lo script del meteo attuale 
+                            var searchButton = document.getElementById('search_btn');
+                            var cityNameInput = document.getElementById('cityform');
+                            cityNameInput.value = city; // Imposta il nome della città cliccata nell'input
+                            searchButton.click(); // Simula il clic sul pulsante di ricerca
+
+                            // Chiama lo script delle previsioni meteo
+                            var searchButtonForecast = document.getElementById('search_btn_forecast');
+                            var cityNameInputForecast = document.getElementById('city-search-forecast');
+                            cityNameInputForecast.value = city; // Imposta il nome della città cliccata nell'input
+                            searchButtonForecast.click(); // Simula il clic sul pulsante di ricerca
+
+                            // Chiama lo script delle statistiche meteo
+                            var searchButtonPast = document.getElementById('search_btn_past');
+                            var cityNameInputPast = document.getElementById('city-search-past');
+                            cityNameInputPast.value = city; // Imposta il nome della città cliccata nell'input
+                            searchButtonPast.click(); // Simula il clic sul pulsante di ricerca
+                        });
+                    });
+                }
+            }
+        });
+    });
+});
+
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var launchButton = document.getElementById('logout_btn');
+    var usernamelab = document.getElementById('lab3');
+
+    launchButton.addEventListener('click', function () {
+        // Rimuovi tutti gli elementi della lista delle città preferite
+        var favoriteCitiesList = document.getElementById('favoriteCitiesList');
+        favoriteCitiesList.innerHTML = ""; // Rimuovi tutte le città precedenti
+
+        usernamelab.style.display = "none";
+        var button1 = document.getElementById("login_btn");
+        var button2 = document.getElementById("logout_btn");
+        button1.style.display = "block";
+        button2.style.display = "none";
+        button1.style.float = "right";
+
+        // Ripristina il form di login
+        var loginForm = document.getElementById("loginForm");
+        loginForm.style.display = "block";
+
+        // Resetta i campi delle form di login e password
+        var usernameform = document.getElementById('usernameform');
+        var passwordform = document.getElementById('passwordform');
+        usernameform.value = "";
+        passwordform.value = "";
+    });
+});
+</script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+    var searchButton = document.getElementById('search_btn');
+    searchButton.addEventListener('click', function () {
+        var cityName = document.getElementById('cityform').value;
+        var url = `https://ek340ix8u3.execute-api.us-east-1.amazonaws.com/dev/realtime?cityName=${cityName}`;
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify({ cityName: cityName }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.text())
+        .then(result => {
+            var data = JSON.parse(JSON.parse(result).body); 
+            
+            var city = data.cityName;
+            var temp = data.temperature.toFixed(2);
+            var humidity = data.humidity.toFixed(2);
+            var weather = data.weather;
+
+            // Mostra la card
+            var card = document.getElementById('todayCard');
+            card.style.display = "block";
+
+            // Aggiorna gli elementi HTML con i dati estratti 
+            document.getElementById('cityName').textContent = city;
+            document.getElementById('temperature').textContent = temp + "°C";
+            document.getElementById('humidity').textContent = humidity + "%";
+            document.getElementById('weather').textContent = weather;
+
+            // Crea un nuovo oggetto Data
+            var dataCorrente = new Date();
+
+            var data = dataCorrente.toISOString().slice(0, 10);
+
+            // Ottieni l'ora corrente 
+            var ora = dataCorrente.toTimeString().slice(0, 8);
+            document.getElementById('todayDateTime').textContent = data + ", " + ora;
+        })
+        .catch(error => console.error('Errore nella richiesta: ' + error));
+    });
+});
+    </script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+    var searchButton = document.getElementById('search_btn_forecast');
+    searchButton.addEventListener('click', function () {
+        var cityName = document.getElementById('city-search-forecast').value;
+        var url = `https://ek340ix8u3.execute-api.us-east-1.amazonaws.com/dev/forecast?cityName=${cityName}`;
+
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify({ cityName: cityName }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.statusCode === 200) {
+                var bodyData = JSON.parse(data.body); // Analizza il corpo JSON all'interno della risposta
+
+                if (Array.isArray(bodyData) && bodyData.length > 0) {
+                    // Itera attraverso i dati previsionali
+                    for (var i = 0; i < bodyData.length; i++) {
+                        var forecast = bodyData[i];
+                        var date = forecast.date;
+                        var city = forecast.cityName;
+                        var max_temp = forecast.max_temperature.toFixed(2);
+                        var min_temp = forecast.min_temperature.toFixed(2);
+                        var humidity = forecast.humidity.toFixed(2);
+                        var weather = forecast.weather;
+                        var wind_speed = forecast.wind_speed.toFixed(2);
+
+                        // Mostra la card
+                        var card = document.getElementById('day'+i);
+                        card.style.display = "block";
+
+                        // Aggiorna gli elementi HTML con i dati estratti
+                        var dateElement = document.getElementById('date' + i);
+                        dateElement.textContent = date;
+
+                        var maxTempElement = document.getElementById('max_temp' + i);
+                        maxTempElement.textContent = max_temp + "°C";
+
+                        var minTempElement = document.getElementById('min_temp' + i);
+                        minTempElement.textContent = min_temp + "°C";
+
+                        var humidityElement = document.getElementById('humidity' + i);
+                        humidityElement.textContent = humidity + "%";
+
+                        var weatherElement = document.getElementById('weather' + i);
+                        weatherElement.textContent = weather;
+
+                        var windElement = document.getElementById('wind_speed' + i);
+                        windElement.textContent = wind_speed + " km/h"
+                    }
+                } else {
+                    console.error('Nessuna previsione trovata nell\'array dei dati previsionali.');
+                }
+            } else {
+                console.error('La risposta ha restituito uno statusCode diverso da 200.');
+            }
+        })
+        .catch(error => console.error('Errore nella richiesta: ' + error));
+    });
+});
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+    var addToFavoritesButton = document.getElementById('add_to_favorites_btn');
+    addToFavoritesButton.addEventListener('click', function () {
+        var cityNameInput = document.getElementById('cityform');
+        var cityName = cityNameInput.value;
+
+        // chiamata all'API per aggiungere la città ai preferiti
+        var username = document.getElementById('lab3').textContent; 
+        var favoritesUrl = 'https://ek340ix8u3.execute-api.us-east-1.amazonaws.com/dev/addfavorite';
+
+        fetch(favoritesUrl, {
+            method: 'POST',
+            body: JSON.stringify({ ID: username, cityName: cityName }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Città aggiunta ai preferiti:', data);
+
+            // aggiungi la città alla lista delle città preferite
+            var favoriteCitiesList = document.getElementById('favoriteCitiesList');
+            var cityItem = document.createElement('li');
+            cityItem.textContent = cityName;
+            cityItem.classList.add('clickable');
+            favoriteCitiesList.appendChild(cityItem);
+
+            
+            cityItem.addEventListener('click', function() {
+                // real time weather
+                var searchButton = document.getElementById('search_btn');
+                var cityNameInput = document.getElementById('cityform');
+                cityNameInput.value = cityName; 
+                searchButton.click(); 
+                // forecast
+                var searchButtonForecast = document.getElementById('search_btn_forecast');
+                var cityNameInputForecast = document.getElementById('city-search-forecast');
+                cityNameInputForecast.value = cityName; 
+                searchButtonForecast.click(); 
+
+                // past stats
+                var searchButtonPast = document.getElementById('search_btn_past');
+                var cityNameInputPast = document.getElementById('city-search-past');
+                cityNameInputPast.value = cityName; 
+                searchButtonPast.click(); 
+            });
+        })
+        .catch(error => console.error('Errore nell\'aggiunta della città ai preferiti: ' + error));
+    });
+});
+
+
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var searchButton = document.getElementById('search_btn_past');
+    searchButton.addEventListener('click', function () {
+        var cityName = document.getElementById('city-search-past').value;
+        var url = `https://ek340ix8u3.execute-api.us-east-1.amazonaws.com/dev/paststatistics?cityName=${cityName}`;
+
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify({ cityName: cityName }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Data:', data);
+
+            var responseJson = JSON.parse(data.body);
+
+            // Estrarre i campi dalla risposta JSON
+            var max_temp = responseJson.max_temperature.toFixed(2);
+            var min_temp = responseJson.min_temperature.toFixed(2);
+            var avg_temp = responseJson.avg_temperature.toFixed(2);
+            var max_humidity = responseJson.max_humidity.toFixed(2);
+            var min_humidity = responseJson.min_humidity.toFixed(2);
+            var avg_humidity = responseJson.avg_humidity.toFixed(2);
+            var avg_cloudcover = responseJson.avg_cloudcover.toFixed(2);
+
+            // Mostra la card
+            var card = document.getElementById('statsCard');
+            card.style.display = "block";
+
+            // Aggiorna gli elementi HTML con i dati estratti 
+            document.getElementById('past_max_temperature').textContent = max_temp + "°C";
+            document.getElementById('past_min_temperature').textContent = min_temp + "°C";
+            document.getElementById('past_avg_temperature').textContent = avg_temp + "°C";
+            document.getElementById('past_max_humidity').textContent = max_humidity + "%";
+            document.getElementById('past_min_humidity').textContent = min_humidity + "%";
+            document.getElementById('past_avg_humidity').textContent = avg_humidity + "%";
+            document.getElementById('past_avg_cloudcover').textContent = avg_cloudcover + "%";
+        })
+        .catch(error => console.error('Errore nella richiesta: ' + error));
+    });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Open the popup 
+    var openRegisterModalButton = document.getElementById('openRegisterModal');
+    var registerModal = document.getElementById('registerModal');
+    openRegisterModalButton.addEventListener('click', function () {
+        registerModal.style.display = 'block';
+    });
+
+    // Chiudi la finestra modale al clic del bottone "Cancel" o al di fuori della finestra
+    var cancelButton = document.getElementById('cancelButton');
+    window.addEventListener('click', function (event) {
+        if (event.target === registerModal) {
+            registerModal.style.display = 'none';
+        }
+    });
+    cancelButton.addEventListener('click', function () {
+        registerModal.style.display = 'none';
+    });
+
+    // Handle the register
+    var registerButton = document.getElementById('registerButton');
+    registerButton.addEventListener('click', function () {
+        var email = document.getElementById('email').value;
+        var password = document.getElementById('password').value;
+
+        // Esegui la registrazione tramite l'API Gateway con email e password
+        var url = 'https://ek340ix8u3.execute-api.us-east-1.amazonaws.com/dev/register';
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify({ ID: email, password: password }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Gestisci la risposta dal server (ad esempio, visualizza un messaggio di conferma)
+            console.log(data);
+        })
+        .catch(error => console.error('Errore nella registrazione: ' + error));
+
+        // Chiudi la finestra modale dopo la registrazione
+        registerModal.style.display = 'none';
+    });
+});
+</script>
+</head>
+<body>
+    <header>
+        <h1>Cloudy Days</h1>
+        <div id="loginContainer">
+            <div id="loginForm">
+                <label for="inputUsername" class="form-label">Username:</label>
+                <input type="text" id="usernameform" name="inputUsername" required>
+                <label for="InputPassword">Password:</label>
+                <input type="password" id="passwordform" name="inputPassword" required>
+            </div>
+
+            <button class="rounded-button" id="login_btn">Login</button>
+            <button id="openRegisterModal">Register</button>
+
+            <label id="lab3" class="form-label" style="display: none">{{ username }}</label>
+
+            <button class="rounded-button" id="logout_btn" style="display: none">Logout</button>
+        </div>
+    </header>
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <h2>Registration</h2>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button id="registerButton">Register</button>
+            <button id="cancelButton">Cancel</button>
+        </div>
+    </div>
+    <section class="container-title">
+        <div>
+            <h2>Today</h2>
+            <p>Check out today's weather.</p>
+        </div>
+        <form>
+                <section>
+                    <input class="form-control" placeholder="Insert city name" type="text" id="cityform" name="inputCity" rows="1" required>
+                        <p>
+                        <button class="rounded-button" type="button" id="search_btn">Search</button>
+                        <button class="rounded-button" type="button" id="add_to_favorites_btn">Add to Favorites</button>
+                        </p> 
+                </section>
+            
+        </form>
+    </section>
+    <section class="weather-container">
+
+        <div class="today-card" style="display: none" id='todayCard'>
+            <h2>Today</h2>
+            <b style="font-size: 25px" id="cityName"></b>
+            <p>Last update: <span class="temperature" id="todayDateTime"></span></p>
+            <img src="..\static\images\sun.png">
+            <p>Temp: <span class="temperature" id="temperature"></span></p>
+            <p>Humidity: <span class="temperature" id="humidity"></span></p>
+            <p>Weather: <span class="temperature" id="weather"></span></p>
+        </div>
+        <div class="today-card">
+            <p>Preferences</p>
+            <ul id="favoriteCitiesList">
+            </ul>
+        </div>
+
+    </section>
+    <section class="container-title">
+        <h2>Forecast</h2>
+        <p>Check out weather forecast for the next 7 days.</p>
+        <form onsubmit="event.preventDefault();">
+                <section>
+                    <input class="form-control" placeholder="Insert city name" type="text" id="city-search-forecast" name="inputCity" rows="1" required>
+                    <button class="rounded-button" type="button" id="search_btn_forecast">Search</button>
+                    <button class="rounded-button" type="button" id="add_to_favorites_btn">Add to Favorites</button>
+                </section>
+            
+        </form>
+    </section>
+    <section class="weather-container">
+        <div class="day-card" id="day0" style="display: none">
+            <h2 id='date0'></h2>
+            <img src="..\static\images\storm.png">
+            <p>Max temp: <span class="temperature" id='max_temp0'></span></p>
+            <p>Min temp: <span class="temperature" id='min_temp0'></span></p>
+            <p>Wind speed: <span class="temperature" id='wind_speed0'></span></p>
+            <p>Humidity: <span class="temperature" id='humidity0'></span></p>
+            <p>Weather: <span class="temperature" id='weather0'></span></p>
+        </div>
+        <div class="day-card" id="day1" style="display: none">
+            <h2 id='date1'></h2>
+            <img src="..\static\images\storm.png">
+            <p>Max temp: <span class="temperature" id='max_temp1'></span></p>
+            <p>Min temp: <span class="temperature" id='min_temp1'></span></p>
+            <p>Wind speed: <span class="temperature" id='wind_speed1'></span></p>
+            <p>Humidity: <span class="temperature" id='humidity1'></span></p>
+            <p>Weather: <span class="temperature" id='weather1'></span></p>
+        </div>
+        <div class="day-card" id="day2" style="display: none">
+            <h2 id='date2'></h2>
+            <img src="..\static\images\storm.png">
+            <p>Max temp: <span class="temperature" id='max_temp2'></span></p>
+            <p>Min temp: <span class="temperature" id='min_temp2'></span></p>
+            <p>Wind speed: <span class="temperature" id='wind_speed2'></span></p>
+            <p>Humidity: <span class="temperature" id='humidity2'></span></p>
+            <p>Weather: <span class="temperature" id='weather2'></span></p>
+        </div>
+        <div class="day-card" id="day3" style="display: none">
+            <h2 id='date3'></h2>
+            <img src="..\static\images\storm.png">
+            <p>Max temp: <span class="temperature" id='max_temp3'></span></p>
+            <p>Min temp: <span class="temperature" id='min_temp3'></span></p>
+            <p>Wind speed: <span class="temperature" id='wind_speed3'></span></p>
+            <p>Humidity: <span class="temperature" id='humidity3'></span></p>
+            <p>Weather: <span class="temperature" id='weather3'></span></p>
+        </div>
+        <div class="day-card" id="day4" style="display: none">
+            <h2 id='date4'></h2>
+            <img src="..\static\images\storm.png">
+            <p>Max temp: <span class="temperature" id='max_temp4'></span></p>
+            <p>Min temp: <span class="temperature" id='min_temp4'></span></p>
+            <p>Wind speed: <span class="temperature" id='wind_speed4'></span></p>
+            <p>Humidity: <span class="temperature" id='humidity4'></span></p>
+            <p>Weather: <span class="temperature" id='weather4'></span></p>
+        </div>
+        <div class="day-card" id="day5" style="display: none">
+            <h2 id='date5'></h2>
+            <img src="..\static\images\storm.png">
+            <p>Max temp: <span class="temperature" id='max_temp5'></span></p>
+            <p>Min temp: <span class="temperature" id='min_temp5'></span></p>
+            <p>Wind speed: <span class="temperature" id='wind_speed5'></span></p>
+            <p>Humidity: <span class="temperature" id='humidity5'></span></p>
+            <p>Weather: <span class="temperature" id='weather5'></span></p>
+        </div>
+    </section>
+    <section class="container-title">
+        <h2>Statistics</h2>
+        <p>Check out weather statistics for the past 7 days.</p>
+        <form>
+                <section>
+                    <input class="form-control" placeholder="Insert city name" type="text" id="city-search-past" name="inputCity" rows="1" required>
+                        <p>
+                        <button class="rounded-button" type="button" id="search_btn_past">Search</button>
+                        <button class="rounded-button" type="button" id="add_to_favorites_btn">Add to Favorites</button>
+                        </p> 
+                </section>
+            
+        </form>
+    </section>
+    <section class="weather-container">
+        <div class="stats-card" style="display: none" id="statsCard">
+            <p>Max temp: <span class="temperature" id="past_max_temperature"></span></p>
+            <p>Min temp: <span class="temperature" id="past_min_temperature"></span></p>
+            <p>Average temp: <span class="temperature" id="past_avg_temperature"></span></p>
+            <p>Max humidity: <span class="temperature" id="past_max_humidity"></span></p>
+            <p>Min humidity: <span class="temperature" id="past_min_humidity"></span></p>
+            <p>Average humidity: <span class="temperature" id="past_avg_humidity"></span></p>
+            <p>Average cloudcover: <span class="temperature" id="past_avg_cloudcover"></span></p>
+        </div>
+    </h1>
+    </section>
+    
+    <footer>
+        <p>&copy; 2023 Cloudy Days</p>
+    </footer>
+</body>
+</html>
