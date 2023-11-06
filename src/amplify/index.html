@@ -89,6 +89,44 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 </script>
+<script>
+    function imageStr(cloudiness) {
+        switch (cloudiness) {
+                            case "overcast clouds":
+                                return "/static/images/cloudy.png";
+                                break;
+                            case "light rain":
+                                return "/static/images/cloudy2.png";
+                                break;
+                            case "secco":
+                                return "/static/images/cloudy.png";
+                                break;
+                            case "clear sky":
+                                return "/static/images/sun.png";
+                                break;
+                            case "few clouds":
+                                return "/static/images/storm.png";
+                                break;
+                            case "rain":
+                                return "/static/images/storm.png";
+                                break;
+                            case "broken clouds":
+                                return "/static/images/cloudy.png";
+                                break;
+                            case "scattered clouds":
+                                return "/static/images/cloudy.png";
+                                break;
+                            case "light snow":
+                                return "/static/images/storm.png";
+                                break;
+                            case "light intensity shower rain":
+                                return "/static/images/cloudy2.png";
+                            default:
+                                return "/static/images/cloudy.png";
+                                break;
+                        } 
+        }
+</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -159,6 +197,9 @@ document.addEventListener('DOMContentLoaded', function () {
             // Ottieni l'ora corrente 
             var ora = dataCorrente.toTimeString().slice(0, 8);
             document.getElementById('todayDateTime').textContent = data + ", " + ora;
+
+            var imgElement = document.getElementById('img6');
+            imgElement.src = imageStr(data.weather);
         })
         .catch(error => console.error('Errore nella richiesta: ' + error));
     });
@@ -217,6 +258,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         var windElement = document.getElementById('wind_speed' + i);
                         windElement.textContent = wind_speed + " km/h"
+                        var imgElement = document.getElementById('img'+i);
+                        imgElement.src = imageStr(data.weather);
                     }
                 } else {
                     console.error('Nessuna previsione trovata nell\'array dei dati previsionali.');
@@ -432,7 +475,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <h2>Today</h2>
             <b style="font-size: 25px" id="cityName"></b>
             <p>Last update: <span class="temperature" id="todayDateTime"></span></p>
-            <img src="..\static\images\sun.png">
+            <img id="img6">
             <p>Temp: <span class="temperature" id="temperature"></span></p>
             <p>Humidity: <span class="temperature" id="humidity"></span></p>
             <p>Weather: <span class="temperature" id="weather"></span></p>
@@ -459,7 +502,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <section class="weather-container">
         <div class="day-card" id="day0" style="display: none">
             <h2 id='date0'></h2>
-            <img src="..\static\images\storm.png">
+            <img id="img_0">
             <p>Max temp: <span class="temperature" id='max_temp0'></span></p>
             <p>Min temp: <span class="temperature" id='min_temp0'></span></p>
             <p>Wind speed: <span class="temperature" id='wind_speed0'></span></p>
@@ -468,7 +511,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
         <div class="day-card" id="day1" style="display: none">
             <h2 id='date1'></h2>
-            <img src="..\static\images\storm.png">
+            <img id="img_1">
             <p>Max temp: <span class="temperature" id='max_temp1'></span></p>
             <p>Min temp: <span class="temperature" id='min_temp1'></span></p>
             <p>Wind speed: <span class="temperature" id='wind_speed1'></span></p>
@@ -477,7 +520,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
         <div class="day-card" id="day2" style="display: none">
             <h2 id='date2'></h2>
-            <img src="..\static\images\storm.png">
+            <img id="img_2">
             <p>Max temp: <span class="temperature" id='max_temp2'></span></p>
             <p>Min temp: <span class="temperature" id='min_temp2'></span></p>
             <p>Wind speed: <span class="temperature" id='wind_speed2'></span></p>
@@ -486,7 +529,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
         <div class="day-card" id="day3" style="display: none">
             <h2 id='date3'></h2>
-            <img src="..\static\images\storm.png">
+            <img id="img_3">
             <p>Max temp: <span class="temperature" id='max_temp3'></span></p>
             <p>Min temp: <span class="temperature" id='min_temp3'></span></p>
             <p>Wind speed: <span class="temperature" id='wind_speed3'></span></p>
@@ -495,7 +538,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
         <div class="day-card" id="day4" style="display: none">
             <h2 id='date4'></h2>
-            <img src="..\static\images\storm.png">
+            <img id="img_4">
             <p>Max temp: <span class="temperature" id='max_temp4'></span></p>
             <p>Min temp: <span class="temperature" id='min_temp4'></span></p>
             <p>Wind speed: <span class="temperature" id='wind_speed4'></span></p>
@@ -504,7 +547,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
         <div class="day-card" id="day5" style="display: none">
             <h2 id='date5'></h2>
-            <img src="..\static\images\storm.png">
+            <img id="img_5">
             <p>Max temp: <span class="temperature" id='max_temp5'></span></p>
             <p>Min temp: <span class="temperature" id='min_temp5'></span></p>
             <p>Wind speed: <span class="temperature" id='wind_speed5'></span></p>
