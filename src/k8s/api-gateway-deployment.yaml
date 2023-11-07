@@ -24,7 +24,8 @@ spec:
         io.kompose.service: api-gateway
     spec:
       containers:
-        - image: docker.io/anastasiabrinati/src-api-gateway
+        - image: docker.io/anastasiabrinati/src-api-gateway:latest
+          imagePullPolicy: IfNotPresent
           name: api-gateway
           ports:
             - containerPort: 50050

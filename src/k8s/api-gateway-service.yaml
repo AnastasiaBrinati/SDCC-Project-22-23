@@ -10,10 +10,9 @@ metadata:
   name: api-gateway
 spec:
   ports:
-    - name: "50050"
+    - name: grpc
+      protocol: TCP
       port: 50050
       targetPort: 50050
   selector:
     io.kompose.service: api-gateway
-status:
-  loadBalancer: {}

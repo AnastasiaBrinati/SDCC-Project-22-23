@@ -50,6 +50,9 @@ def login():
             return jsonify({"correct": True, "username": username})
         
     except Exception as e:
+        fp=open("errorilogin.txt", "a")
+        fp.write("\necco la response: "+str(days))
+        fp.close()
         return jsonify({"message": "Si è verificato un errore: " + str(e)})
 
     redirect("/")
@@ -76,6 +79,9 @@ def search_now():
         return jsonify({"correct": True, "city": city, "temperature": str(response[0]), "humidity":str(response[1]), "cloudiness":str(response[2])})
         
     except Exception as e:
+        fp=open("errorinow.txt", "a")
+        fp.write("\necco la response: "+str(days))
+        fp.close()
         return jsonify({"message": "Si è verificato un errore: " + str(e)})
 
 # redirecting past search button
@@ -99,6 +105,9 @@ def search_past():
         return jsonify({"correct": True, "city": city, "max_temperature": str(response[0]), "min_temperature":str(response[1]), "avg_temperature":str(response[2]), "max_humidity": str(response[3]), "min_humidity":str(response[4]), "avg_humidity":str(response[5]),  "avg_cloudcover":str(response[6])})
         
     except Exception as e:
+        fp=open("erroripast.txt", "a")
+        fp.write("\necco la response: "+str(days))
+        fp.close()
         return jsonify({"correct": False, "message": "Si è verificato un errore: " + str(e)})
     
 # redirecting forecast search button
@@ -120,13 +129,13 @@ def search_forecast():
         
         days = weatherForecast(city)
         fp=open("erroriforecast.txt", "a")
-        fp.write("ecco la response: "+str(days))
+        fp.write("\necco la response: "+str(days))
         fp.close()
         return jsonify({"correct": True, "city": city, "day1": days[0], "day2": days[1], "day3": days[2], "day4": days[3], "day5": days[4]})
         
     except Exception as e:
         fp=open("erroriforecast.txt", "a")
-        fp.write("ecco l' exception: "+str(e))
+        fp.write("\necco l' exception: "+str(e))
         fp.close()
         return jsonify({"message": "Si è verificato un errore: " + str(e)})
 

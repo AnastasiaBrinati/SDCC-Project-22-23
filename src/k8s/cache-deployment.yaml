@@ -6,13 +6,13 @@ metadata:
     kompose.version: 1.26.0 (40646f47)
   creationTimestamp: null
   labels:
-    io.kompose.service: login
-  name: login
+    io.kompose.service: cache
+  name: cache
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: login
+      io.kompose.service: cache
   strategy:
     type: Recreate
   template:
@@ -22,20 +22,29 @@ spec:
         kompose.version: 1.26.0 (40646f47)
       creationTimestamp: null
       labels:
-        io.kompose.service: login
+        io.kompose.service: cache
     spec:
       containers:
-        - image: docker.io/anastasiabrinati/src-login:latest
-          name: login
+        - args:
+            - redis-server
+            - --save
+            - "20"
+            - "1"
+            - --loglevel
+            - warning
+            - --requirepass
+            - eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+          image: redis:6.2-alpine
+          name: cache
           ports:
-            - containerPort: 50051
+            - containerPort: 6379
           resources: {}
           volumeMounts:
-            - mountPath: /src
-              name: login-claim0
+            - mountPath: /data
+              name: cache
       restartPolicy: Always
       volumes:
-        - name: login-claim0
+        - name: cache
           persistentVolumeClaim:
-            claimName: login-claim0
+            claimName: cache
 status: {}

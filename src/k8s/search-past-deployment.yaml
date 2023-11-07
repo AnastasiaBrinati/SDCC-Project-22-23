@@ -6,13 +6,13 @@ metadata:
     kompose.version: 1.26.0 (40646f47)
   creationTimestamp: null
   labels:
-    io.kompose.service: search
-  name: search
+    io.kompose.service: search-past
+  name: search-past
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: search
+      io.kompose.service: search-past
   strategy: {}
   template:
     metadata:
@@ -21,11 +21,11 @@ spec:
         kompose.version: 1.26.0 (40646f47)
       creationTimestamp: null
       labels:
-        io.kompose.service: search
+        io.kompose.service: search-past
     spec:
       containers:
-        - image: docker.io/anastasiabrinati/src-search
-          name: search
+        - image: docker.io/anastasiabrinati/src-search-past:latest
+          name: search-past
           ports:
             - containerPort: 50052
           resources: {}

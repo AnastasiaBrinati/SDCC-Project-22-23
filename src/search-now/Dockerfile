@@ -11,5 +11,5 @@ COPY . .
 
 RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-EXPOSE 50052
+EXPOSE 50053
 CMD ["python3", "./search_now.py"]

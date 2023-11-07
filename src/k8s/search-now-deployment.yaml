@@ -6,13 +6,13 @@ metadata:
     kompose.version: 1.26.0 (40646f47)
   creationTimestamp: null
   labels:
-    io.kompose.service: frontend
-  name: frontend
+    io.kompose.service: search-now
+  name: search-now
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: frontend
+      io.kompose.service: search-now
   strategy: {}
   template:
     metadata:
@@ -21,13 +21,13 @@ spec:
         kompose.version: 1.26.0 (40646f47)
       creationTimestamp: null
       labels:
-        io.kompose.service: frontend
+        io.kompose.service: search-now
     spec:
       containers:
-        - image: docker.io/anastasiabrinati/src-frontend:latest
-          name: frontend
+        - image: docker.io/anastasiabrinati/src-search-now:latest
+          name: search-now
           ports:
-            - containerPort: 5000
+            - containerPort: 50053
           resources: {}
       restartPolicy: Always
 status: {}
