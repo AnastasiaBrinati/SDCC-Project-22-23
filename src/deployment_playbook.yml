@@ -1,57 +1,22 @@
 - hosts: localhost
-  tasks:
-  - name: Clone the Git repository
+  pre_tasks:
+  - name: Update(or clone) the Git repository
     git:
       repo: https://github.com/AnastasiaBrinati/SDCC_project_22-23.git
       dest: /home/ubuntu/CloudyDays
       update: yes
+  - name: check the status of minikube.
+      command: minikube status
+      register: minikube_status
+      changed_when: false
+      ignore_errors: true
 
-  - name: Create download directory
-    ansible.builtin.file:
-      state: directory
-      mode: 'u=rwx,go=rx'
-      dest: 'minikube_download_dir'
-  
-  - name: Download sha256sum
-    ansible.builtin.get_url:
-      url: 'minikube_mirror/minikube_redis_filename.sha256'
-      dest: 'minikube_download_dir/minikube_download_filename.sha256'
-      force: false
-      use_proxy: true
-      validate_certs: true
-      mode: 'u=rw,go=r'
-  
-  - name: Read sha256sum
-    ansible.builtin.slurp:
-      src: 'minikube_download_dir/minikube_download_filename.sha256'
-    register: minikube_sha256sum
-  
-  - name: Download Minikube
-    ansible.builtin.get_url:
-      url: 'minikube_mirror/minikube_redis_filename'
-      dest: 'minikube_download_dir/minikube_download_filename'
-      checksum: 'sha256: minikube_sha256sum.content | b64decode | trim '
-      force: false
-      use_proxy: true
-      validate_certs: true
-      mode: 'u=rw,go=r'
-  
-  - name: Create the Minikube installation dir
-    become: true
-    ansible.builtin.file:
-      state: directory
-      owner: root
-      group: root
-      mode: 'u=rwx,go=rx'
-      dest: 'minikube_install_dir'
-  
-  - name: Install Minikube
-    become: true
-    ansible.builtin.copy:
-      src: 'minikube_download_dir/minikube_download_filename'
-      remote_src: true
-      dest: 'minikube_install_path'
-      force: true
-      owner: root
-      group: root
-      mode: 'u=rwx,go=rx'
+  tasks:
+  - name: start minikube if it's not running.
+      command: minikube start --vm = true
+      when: "not minikube_status.stdout or 'Running' not in minikube_status.stdout"
+
+  post_tasks:
+    - name: exposing Cloudy Days on the host via Minikube.
+      command: minikube tunnel
+      changed_when: false
