@@ -1,7 +1,12 @@
-- name: Clone code repository
-  git:  repo=https://github.com/AnastasiaBrinati/SDCC_project_22-23.git
-        dest=/home/user/enterprise
-        accept_hostkey=yes
-        force=yes
-        recursive=no
-        key_file=chiavi.txt/.ssh/id_rsa
+- hosts: localhost
+  tasks:
+  - name: Ensure that git is installed
+    dnf:
+      name: git
+      state: present
+
+  - name: Clone the Git repository
+    git:
+      repo: https://github.com/AnastasiaBrinati/SDCC_project_22-23.git
+      dest: /home/ubuntu/
+      clone: yes
