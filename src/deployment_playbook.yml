@@ -17,10 +17,10 @@
 
   tasks:
   - name: start minikube if it's not running.
-      command: minikube start --vm = true
-      when: "not minikube_status.stdout or 'Running' not in minikube_status.stdout"
+    command: minikube start --vm = true
+    when: "not minikube_status.stdout or 'Running' not in minikube_status.stdout"
 
   post_tasks:
-    - name: exposing Cloudy Days on the host via Minikube.
-      command: minikube tunnel
-      changed_when: false
+  - name: exposing Cloudy Days on the host via Minikube.
+    command: minikube tunnel
+    changed_when: false
