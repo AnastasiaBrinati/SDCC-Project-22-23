@@ -3,5 +3,5 @@
   - name: Clone the Git repository
     git:
       repo: https://github.com/AnastasiaBrinati/SDCC_project_22-23.git
-      dest: /home/ubuntu/
+      dest: /home/ubuntu/SDCC
       update: yes
