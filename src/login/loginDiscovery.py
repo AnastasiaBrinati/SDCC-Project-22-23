@@ -3,7 +3,7 @@ import grpc
 from proto import discovery_pb2
 from proto import discovery_pb2_grpc
 
-DISCOVERY_SERVER = 'src-api-gateway-1:50050'
+DISCOVERY_SERVER = 'api-gateway:50050'
 
 """
 Expose microservice and it's port.

@@ -22,8 +22,6 @@ class Microservice:
 # who am I?
 # Port:
 PORT = '50050'
-# Name:
-SERVER_1 = 'src-api-gateway-1'
 # [Me] in a list: 
 SERVERS = []
 
@@ -41,7 +39,7 @@ class DiscoveryServicer(discovery_pb2_grpc.DiscoveryServiceServicer):
             # Verifico se è presente l'informazione richiesta.
             port = microservices['login']
 
-            channel = grpc.insecure_channel('src-login-1:'+port)
+            channel = grpc.insecure_channel('login:'+port)
             stub = login_pb2_grpc.LoginnerStub(channel)
             login_reply = stub.Login(login_pb2.LoginRequest(username=request.username, password=request.password))
 
@@ -58,7 +56,7 @@ class DiscoveryServicer(discovery_pb2_grpc.DiscoveryServiceServicer):
         try:
             # Verifico se è presente l'informazione richiesta.
             port = microservices['search_past']
-            channel = grpc.insecure_channel('src-search-past-1:'+port)
+            channel = grpc.insecure_channel('search-past:'+port)
             stub = searchpast_pb2_grpc.SearcherPastStub(channel)
             reply = stub.Search(searchpast_pb2.SearchPastRequest(city=request.city))
                     
@@ -66,7 +64,7 @@ class DiscoveryServicer(discovery_pb2_grpc.DiscoveryServiceServicer):
                               
         except Exception as e:
             fp = open("errori.txt", "a")
-            fp.write("discoverySearchPast: risposta errata"+str(e)+"\n")
+            fp.write("discovery search past: risposta errata"+str(e)+"\n")
             fp.close()
             return discovery_pb2.DiscoverySearchPastReply(correct=False)
     
@@ -74,7 +72,7 @@ class DiscoveryServicer(discovery_pb2_grpc.DiscoveryServiceServicer):
         try:
             # Verifico se è presente l'informazione richiesta.
             port = microservices['search_now']
-            channel = grpc.insecure_channel('src-search-now-1:'+port)
+            channel = grpc.insecure_channel('search-now:'+port)
             stub = searchnow_pb2_grpc.SearcherNowStub(channel)
             search_reply = stub.Search(searchnow_pb2.SearchNowRequest(city=request.city))
    
@@ -90,7 +88,7 @@ class DiscoveryServicer(discovery_pb2_grpc.DiscoveryServiceServicer):
         try:
             # Verifico se è presente l'informazione richiesta.
             port = microservices['search_forecast']
-            channel = grpc.insecure_channel('src-search-forecast-1:'+port)
+            channel = grpc.insecure_channel('search-forecast:'+port)
             stub = searchforecast_pb2_grpc.SearcherForecastStub(channel)
             reply = stub.Search(searchforecast_pb2.SearchForecastRequest(city=request.city))
 

@@ -14,8 +14,16 @@ def checkCredentials(username, password):
     con = mysql.connector.connect(user='root',password='a',host='mysql',database='users')
     c = con.cursor()
 
+    fp = open("conn.txt","a")
+    fp.write("connection open, but there is no table\n")
+    fp.close()
+
     users = []    
     c.execute(f"""SELECT username FROM Users WHERE username='{username}' AND password='{password}'""")
+
+    fp = open("conn.txt","a")
+    fp.write("select username okkk\n")
+    fp.close()
 
     for row in c:
         user = {
