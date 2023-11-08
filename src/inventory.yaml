@@ -1,7 +1,3 @@
-- name: Clone code repository
-  git:  repo=https://github.com/AnastasiaBrinati/SDCC_project_22-23.git
-        dest=/home/user/enterprise
-        accept_hostkey=yes
-        force=yes
-        recursive=no
-        key_file=chiavi.txt/.ssh/id_rsa
+ungrouped:
+  hosts:
+    localhost:
