@@ -18,6 +18,6 @@
   - name: Install Kubectl utility
     command: sudo snap install kubectl --classic
   - name: chmod  
-    command: sudo chmod +x snap/kubectl
+    command: sudo chmod +x /snap/kubectl
   - name: mv kubectl
     command: sudo mv kubectl /usr/local/bin/
