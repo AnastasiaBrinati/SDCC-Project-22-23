@@ -24,4 +24,4 @@
   - name: mv kubectl
     command: sudo mv ./kubectl /usr/local/bin/
   - name: Minikube Start
-    command: minikube start --vm-driver docker
+    command: sudo minikube start --vm-driver docker
