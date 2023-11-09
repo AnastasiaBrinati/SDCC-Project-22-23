@@ -9,6 +9,8 @@
     command: sudo apt-get update -y
   - name: sudo apt upgrade
     command: sudo apt-get upgrade -y
+  - name: Install Docker
+    command: sudo apt install docker.io
   - name: Install Minikube dependencies
     command: sudo apt install -y curl wget apt-transport-https
   - name: Download Minikube Binary
@@ -21,3 +23,5 @@
     command: sudo chmod +x ./kubectl
   - name: mv kubectl
     command: sudo mv ./kubectl /usr/local/bin/
+  - name: Minikube Start
+    command: minikube start --vm-driver docker
