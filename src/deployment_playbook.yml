@@ -5,12 +5,5 @@
       repo: https://github.com/AnastasiaBrinati/SDCC_project_22-23.git
       dest: /home/ubuntu/CloudyDays
       update: yes
-  - name: install kubectl
-    get_url:
-      url: "https://dl.k8s.io/release/v1.21.0/bin/linux/amd64/kubectl"
-      dest: /usr/local/bin/kubectl
-      mode: "0755"
-  - name: sudo install minikube
-    apt:
-      deb: "https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb"
-      state: present
+  - name: sudo apt update
+    command: sudo apt-get update -y
