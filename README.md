@@ -13,3 +13,5 @@ and then executing the ansible-playbook
 - ansible-playbook deployment-playbook.yml
 
 Add an inventory if you like it, however for the purpose of this project we limited ourselves at executing only in localhost.
+
+Disclaimer: we didn't care for security aspects, most passwords and passwkeys are hardcoded and visible.
