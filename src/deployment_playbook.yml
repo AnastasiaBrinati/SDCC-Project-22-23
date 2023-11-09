@@ -10,7 +10,11 @@
   - name: sudo apt upgrade
     command: sudo apt-get upgrade -y
   - name: Install Docker
-    command: sudo apt install docker.io
+    expect:
+      command: sudo apt install docker.io
+      responses:
+        "Do you want to continue? [Y/n]": "yes"  # Define the prompt and the response you want to provide
+    register: command_result
   - name: Install Minikube dependencies
     command: sudo apt install -y curl wget apt-transport-https
   - name: Download Minikube Binary
