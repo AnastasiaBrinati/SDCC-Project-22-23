@@ -7,3 +7,11 @@
       update: yes
   - name: sudo apt update
     command: sudo apt-get update -y
+  - name: sudo apt upgrade
+    command: sudo apt-get upgrade -y
+  - name: Install Minikube dependencies
+    command: sudo apt install -y curl wget apt-transport-https
+  - name: Download Minikube Binary
+    command: curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+  - name: Install Minikube
+    command: sudo install minikube-linux-amd64 /usr/local/bin/minikube
