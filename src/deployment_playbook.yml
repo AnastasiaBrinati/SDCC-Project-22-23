@@ -14,17 +14,17 @@
       url: https://download.docker.com/linux/ubuntu/gpg
       state: present
   - name: Add Docker Repository
-      apt_repository:
-        repo: deb https://download.docker.com/linux/ubuntu focal stable
-        state: present
+    apt_repository:
+      repo: deb https://download.docker.com/linux/ubuntu focal stable
+      state: present
   - name: Update apt and install docker-ce
-      apt:
-        name: docker-ce
-        state: latest
-        update_cache: true
+    apt:
+      name: docker-ce
+      state: latest
+      update_cache: true
   - name: Install Docker Module for Python
-      pip:
-        name: docker
+    pip:
+      name: docker
   - name: Install Minikube dependencies
     command: sudo apt install -y curl wget apt-transport-https
   - name: Download Minikube Binary
