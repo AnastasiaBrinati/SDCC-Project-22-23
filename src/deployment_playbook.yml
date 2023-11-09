@@ -9,18 +9,3 @@
     apt:
       deb: "https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb"
       state: present
-  - name: install kubectl
-    get_url:
-      url: "https://dl.k8s.io/release/v1.21.0/bin/linux/amd64/kubectl"
-      dest: /usr/local/bin/kubectl
-      mode: "0755"
-
-  tasks:
-  - name: start minikube if it's not running.
-    command: minikube start --vm = true
-    when: "not minikube_status.stdout or 'Running' not in minikube_status.stdout"
-
-  post_tasks:
-  - name: exposing Cloudy Days on the host via Minikube.
-    command: minikube tunnel
-    changed_when: false
