@@ -9,12 +9,16 @@
     command: sudo apt-get update -y
   - name: sudo apt upgrade
     command: sudo apt-get upgrade -y
-  - name: Install Docker
-    expect:
-      command: sudo apt install docker.io
-      responses:
-        "Do you want to continue? [Y/n]": "yes"  # Define the prompt and the response you want to provide
-    register: command_result
+  - name: certificates
+    command: sudo apt install apt-transport-https ca-certificates curl software-properties-common
+  - name: add the GPG key for the official Docker repository to your system
+    command: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - name: add Docker repo to APT sources
+    command: sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+  - name: installing from the Docker repo
+    command: apt-cache policy docker-ce
+  - name: Install docker-ce
+    command: sudo apt install docker-ce
   - name: Install Minikube dependencies
     command: sudo apt install -y curl wget apt-transport-https
   - name: Download Minikube Binary
@@ -23,7 +27,7 @@
     command: sudo install minikube-linux-amd64 /usr/local/bin/minikube
   - name: Install Kubectl utility
     command: curl -LO https://dl.k8s.io/release/v1.28.3/bin/linux/amd64/kubectl
-  - name: chmod  
+  - name: chmod kubectl
     command: sudo chmod +x ./kubectl
   - name: mv kubectl
     command: sudo mv ./kubectl /usr/local/bin/
