@@ -6,6 +6,6 @@
       dest: /home/ubuntu/CloudyDays
       update: yes
   - name: sudo install minikube
-    sudo apt:
+    apt:
       deb: "https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb"
       state: present
