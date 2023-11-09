@@ -20,4 +20,4 @@
   - name: chmod  
     command: sudo chmod +x ./kubectl
   - name: mv kubectl
-    command: sudo mv /snap/kubectl /usr/local/bin/
+    command: sudo mv ./kubectl /usr/local/bin/
