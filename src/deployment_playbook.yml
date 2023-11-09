@@ -16,7 +16,7 @@
   - name: Install Minikube
     command: sudo install minikube-linux-amd64 /usr/local/bin/minikube
   - name: Install Kubectl utility
-    command: -LO https://dl.k8s.io/release/v1.28.3/bin/linux/amd64/kubectl
+    command: curl -LO https://dl.k8s.io/release/v1.28.3/bin/linux/amd64/kubectl
   - name: chmod  
     command: sudo chmod +x ./kubectl
   - name: mv kubectl
