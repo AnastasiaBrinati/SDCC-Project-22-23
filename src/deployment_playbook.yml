@@ -9,22 +9,8 @@
     command: sudo apt-get update -y
   - name: sudo apt upgrade
     command: sudo apt-get upgrade -y
-  - name: Add Docker GPG apt Key
-    apt_key:
-      url: https://download.docker.com/linux/ubuntu/gpg
-      state: present
-  - name: Add Docker Repository
-    apt_repository:
-      repo: deb https://download.docker.com/linux/ubuntu focal stable
-      state: present
-  - name: Update apt and install docker-ce
-    apt:
-      name: docker-ce
-      state: latest
-      update_cache: true
-  - name: Install Docker Module for Python
-    pip:
-      name: docker
+  - name: Install Docker
+    ansible.builtin.shell: cd ~ && curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
   - name: Install Minikube dependencies
     command: sudo apt install -y curl wget apt-transport-https
   - name: Download Minikube Binary
