@@ -16,7 +16,7 @@
   - name: Install Minikube
     command: sudo install minikube-linux-amd64 /usr/local/bin/minikube
   - name: Install Kubectl utility
-    command: sudo snap install kubectl
+    command: sudo snap install kubectl --classic
   - name: chmod  
     command: sudo chmod +x kubectl
   - name: mv kubectl
