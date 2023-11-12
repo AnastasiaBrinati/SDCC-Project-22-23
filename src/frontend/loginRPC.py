@@ -7,7 +7,7 @@ from proto import discovery_pb2_grpc
 """
 Known beforehand, you must have someplace to start the connection with the rest of the system
 """
-DISCOVERY_SERVER = 'src-api-gateway-1:50050'
+DISCOVERY_SERVER = 'api-gateway:50050'
 
 """
 Try to connect with the api-gateway to start the communication.
