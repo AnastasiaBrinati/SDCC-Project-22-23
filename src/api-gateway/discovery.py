@@ -4,8 +4,8 @@ from concurrent import futures
 
 from proto import discovery_pb2
 from proto import discovery_pb2_grpc
-from proto import login_pb2
-from proto import login_pb2_grpc
+from proto import user_pb2
+from proto import user_pb2_grpc
 from proto import searchnow_pb2
 from proto import searchnow_pb2_grpc
 from proto import searchpast_pb2
@@ -37,20 +37,44 @@ class DiscoveryServicer(discovery_pb2_grpc.DiscoveryServiceServicer):
     def discoveryLogin(self, request, context):
         try:
             # Verifico se è presente l'informazione richiesta.
-            port = microservices['login']
+            port = microservices['user']
 
-            channel = grpc.insecure_channel('login:'+port)
-            stub = login_pb2_grpc.LoginnerStub(channel)
-            login_reply = stub.Login(login_pb2.LoginRequest(username=request.username, password=request.password))
+            channel = grpc.insecure_channel('src-user-1:'+port)
+            stub = user_pb2_grpc.UsererStub(channel)
+            login_reply = stub.Login(user_pb2.LoginRequest(username=request.username, password=request.password))
 
 
             if(login_reply.correct):
-                return discovery_pb2.DiscoveryLoginReply(correct=True)
+                fp = open("citta.txt", "a")
+                fp.write("citta1: " + login_reply.city1)
+                fp.write("\ncitta2: " + login_reply.city2)
+                fp.write("\ncitta3: " + login_reply.city3)
+                fp.close()
+                return discovery_pb2.DiscoveryLoginReply(correct=True, city1=login_reply.city1, city2=login_reply.city2, city3=login_reply.city3)
 
             return discovery_pb2.DiscoveryLoginReply(correct=False)
                               
         except:
             return discovery_pb2.DiscoveryLoginReply(correct=False)
+
+        
+    def discoveryAddToFav(self, request, context):
+        try:
+            # Verifico se è presente l'informazione richiesta.
+            port = microservices['user']
+
+            channel = grpc.insecure_channel('src-user-1:'+port)
+            stub = user_pb2_grpc.UsererStub(channel)
+            add_reply = stub.AddToFav(user_pb2.AddToFavRequest(username=request.username, city=request.city))
+
+
+            if(add_reply.correct):
+                return discovery_pb2.DiscoveryAddToFavReply(correct=True)
+
+            return discovery_pb2.DiscoveryAddToFavReply(correct=False)
+                              
+        except:
+            return discovery_pb2.DiscoveryAddToFavReply(correct=False)
     
     def discoverySearchPast(self, request, context):
         try:

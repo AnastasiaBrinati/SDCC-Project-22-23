@@ -1,6 +1,7 @@
 from flask import Flask, redirect, render_template, request, session, jsonify
 from flask_session import Session
 from loginRPC import sendLoginInfo
+from addToFavRPC import addToFav
 from searchRPC import weatherNow, weatherPast, weatherForecast
 
 app = Flask(__name__)
@@ -45,12 +46,41 @@ def login():
             # campi non riempiti
             return jsonify({"correct": False, "username": ""})
         
-        response = sendLoginInfo(username, password)
+        cities = []
+        response, cities = sendLoginInfo(username, password)
         if(response==True):
-            return jsonify({"correct": True, "username": username})
+            fp=open("errori.txt", "a")
+            fp.write("\necco la response: "+str(cities))
+            fp.close()
+            return jsonify({"correct": True, "username": username, "cities": cities})
         
     except Exception as e:
         fp=open("errorilogin.txt", "a")
+        fp.write("\necco la response: "+str(cities))
+        fp.close()
+        return jsonify({"message": "Si è verificato un errore: " + str(e)})
+
+    redirect("/")
+    return jsonify({"correct": False, "username": ""})
+
+@app.route('/addtofav', methods=('GET','POST'))
+def addtofav():
+
+    try:
+        data = request.get_json()
+        username = data.get('username')
+        city = data.get('city')
+
+        if(username == "" or city== ""):
+            # campi non riempiti
+            return jsonify({"correct": False, "username": ""})
+        
+        response = addToFav(username, city)
+        if(response==True):
+            return jsonify({"correct": True})
+        
+    except Exception as e:
+        fp=open("errori_add_to_fav.txt", "a")
         fp.write("\necco la response: "+str(days))
         fp.close()
         return jsonify({"message": "Si è verificato un errore: " + str(e)})
@@ -146,9 +176,8 @@ def logout(username):
         stringa = "ERRORE NELLA GESTIONE DELLA SESSIONE."
         return render_template("errore.html", errore=stringa, username=None)
 
-    fp = open("what_is_going_on.txt", "a")
-    fp.write("\n wtf: username: " + username)
-    fp.close()
+    # svuota lista dei preferiti!!!!!!!!!!
+
     #termino la sessione relativa all'utente loggato
     session.pop(username)
     return

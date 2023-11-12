@@ -5,6 +5,7 @@ package proto;
 service DiscoveryService {
 
 	rpc discoveryLogin(DiscoveryLoginRequest) returns (DiscoveryLoginReply);
+	rpc discoveryAddToFav(DiscoveryAddToFavRequest) returns (DiscoveryAddToFavReply);
 
 	rpc discoverySearchPast(DiscoverySearchPastRequest) returns (DiscoverySearchPastReply);
 	rpc discoverySearchNow(DiscoverySearchNowRequest) returns (DiscoverySearchNowReply);
@@ -21,6 +22,17 @@ message DiscoveryLoginRequest {
 }
 
 message DiscoveryLoginReply {
+	bool correct = 1;
+  string city1 = 2;
+  string city2 = 3;
+  string city3 = 4;
+}
+
+message DiscoveryAddToFavRequest {
+	string username = 1;
+	string city = 2;
+}
+message DiscoveryAddToFavReply {
 	bool correct = 1;
 }
 

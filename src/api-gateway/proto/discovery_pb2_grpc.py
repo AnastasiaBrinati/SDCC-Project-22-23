@@ -19,6 +19,11 @@ class DiscoveryServiceStub(object):
                 request_serializer=proto_dot_discovery__pb2.DiscoveryLoginRequest.SerializeToString,
                 response_deserializer=proto_dot_discovery__pb2.DiscoveryLoginReply.FromString,
                 )
+        self.discoveryAddToFav = channel.unary_unary(
+                '/proto.DiscoveryService/discoveryAddToFav',
+                request_serializer=proto_dot_discovery__pb2.DiscoveryAddToFavRequest.SerializeToString,
+                response_deserializer=proto_dot_discovery__pb2.DiscoveryAddToFavReply.FromString,
+                )
         self.discoverySearchPast = channel.unary_unary(
                 '/proto.DiscoveryService/discoverySearchPast',
                 request_serializer=proto_dot_discovery__pb2.DiscoverySearchPastRequest.SerializeToString,
@@ -45,6 +50,12 @@ class DiscoveryServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def discoveryLogin(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def discoveryAddToFav(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -81,6 +92,11 @@ def add_DiscoveryServiceServicer_to_server(servicer, server):
                     servicer.discoveryLogin,
                     request_deserializer=proto_dot_discovery__pb2.DiscoveryLoginRequest.FromString,
                     response_serializer=proto_dot_discovery__pb2.DiscoveryLoginReply.SerializeToString,
+            ),
+            'discoveryAddToFav': grpc.unary_unary_rpc_method_handler(
+                    servicer.discoveryAddToFav,
+                    request_deserializer=proto_dot_discovery__pb2.DiscoveryAddToFavRequest.FromString,
+                    response_serializer=proto_dot_discovery__pb2.DiscoveryAddToFavReply.SerializeToString,
             ),
             'discoverySearchPast': grpc.unary_unary_rpc_method_handler(
                     servicer.discoverySearchPast,
@@ -126,6 +142,23 @@ class DiscoveryService(object):
         return grpc.experimental.unary_unary(request, target, '/proto.DiscoveryService/discoveryLogin',
             proto_dot_discovery__pb2.DiscoveryLoginRequest.SerializeToString,
             proto_dot_discovery__pb2.DiscoveryLoginReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def discoveryAddToFav(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/proto.DiscoveryService/discoveryAddToFav',
+            proto_dot_discovery__pb2.DiscoveryAddToFavRequest.SerializeToString,
+            proto_dot_discovery__pb2.DiscoveryAddToFavReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

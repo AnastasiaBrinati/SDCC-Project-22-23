@@ -50,6 +50,7 @@
         <div class="today-card">
             <h2 id='cityname' style="font-size: 25px">{{ city }}</h2>
             <h2 id="day-of-week"></h2>
+            <button class="rounded-button" type="button" id="fav_btn">add</button>
             <img id='weatherpic' src="..\static\images\sun.png">
             <p>Temp: <span id='temp' class="temperature">{{ temp }}</span></p>
             <p>Humidity: <span id='hum' class="temperature">{{ hum }}</span></p>
@@ -57,6 +58,8 @@
         </div>
         <div class="today-card">
             <p>Preferences</p>
+            <ul id="favoriteCitiesList">
+            </ul>
         </div>
         
         <!-- Ripeti lo stesso modello per gli altri giorni della settimana -->
@@ -164,7 +167,7 @@
 
 
 <script>
-        function imageStr(cloudiness) {
+    function imageStr(cloudiness) {
         switch (cloudiness) {
                             case "overcast clouds":
                                 return "/static/images/cloudy.png";
@@ -195,6 +198,7 @@
                                 break;
                             case "light intensity shower rain":
                                 return "/static/images/cloudy2.png";
+                                break;
                             default:
                                 return "/static/images/cloudy.png";
                                 break;
@@ -370,6 +374,78 @@
                     form2.style.display = "none";
                     form3.style.display = "none";
                     form4.style.display = "none";
+
+                    var favoriteCitiesList = document.getElementById('favoriteCitiesList');
+                    var cityItem1 = document.createElement('li');
+                    cityItem1.textContent = data.cities[0];
+                    cityItem1.classList.add('clickable');
+                    favoriteCitiesList.appendChild(cityItem1);
+                    var cityItem2 = document.createElement('li');
+                    cityItem2.innerHTML = data.cities[1];
+                    cityItem2.classList.add('clickable');
+                    favoriteCitiesList.appendChild(cityItem2);
+                    var cityItem3 = document.createElement('li');
+                    cityItem3.innerHTML = data.cities[2];
+                    cityItem3.classList.add('clickable');
+                    favoriteCitiesList.appendChild(cityItem3);
+
+                        
+                    cityItem1.addEventListener('click', function() {
+                    // real time weather
+                    var searchButton = document.getElementById('search_btn');
+                    var cityNameInput = document.getElementById('cityform');
+                    cityNameInput.value = cityName; 
+                    searchButton.click(); 
+                            // forecast
+                            var searchButtonForecast = document.getElementById('search_btn_forecast');
+                            var cityNameInputForecast = document.getElementById('city-search-forecast');
+                            cityNameInputForecast.value = cityName; 
+                            searchButtonForecast.click(); 
+
+                            // past stats
+                            var searchButtonPast = document.getElementById('search_btn_past');
+                            var cityNameInputPast = document.getElementById('city-search-past');
+                            cityNameInputPast.value = cityName; 
+                            searchButtonPast.click(); 
+                    });
+
+                    cityItem2.addEventListener('click', function() {
+                    // real time weather
+                    var searchButton = document.getElementById('search_btn');
+                    var cityNameInput = document.getElementById('cityform');
+                    cityNameInput.value = cityName; 
+                    searchButton.click(); 
+                            // forecast
+                            var searchButtonForecast = document.getElementById('search_btn_forecast');
+                            var cityNameInputForecast = document.getElementById('city-search-forecast');
+                            cityNameInputForecast.value = cityName; 
+                            searchButtonForecast.click(); 
+
+                            // past stats
+                            var searchButtonPast = document.getElementById('search_btn_past');
+                            var cityNameInputPast = document.getElementById('city-search-past');
+                            cityNameInputPast.value = cityName; 
+                            searchButtonPast.click(); 
+                    });
+
+                    cityItem3.addEventListener('click', function() {
+                    // real time weather
+                    var searchButton = document.getElementById('search_btn');
+                    var cityNameInput = document.getElementById('cityform');
+                    cityNameInput.value = cityName; 
+                    searchButton.click(); 
+                            // forecast
+                            var searchButtonForecast = document.getElementById('search_btn_forecast');
+                            var cityNameInputForecast = document.getElementById('city-search-forecast');
+                            cityNameInputForecast.value = cityName; 
+                            searchButtonForecast.click(); 
+
+                            // past stats
+                            var searchButtonPast = document.getElementById('search_btn_past');
+                            var cityNameInputPast = document.getElementById('city-search-past');
+                            cityNameInputPast.value = cityName; 
+                            searchButtonPast.click(); 
+                    });
                 }
             });
         
@@ -410,5 +486,64 @@
         });
     });
 
+    document.addEventListener("DOMContentLoaded", function () {
+        var addButton = document.getElementById('add');
+        searchButton.addEventListener('click', function () {
+            
+            var cityform = document.getElementById('cityname');
+            var city = cityform.value;
 
+            var usernameform = document.getElementById('lab3');
+            var username = usernameform.value;
+
+
+            fetch('/addtofav', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ city: city, username: username })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+
+                    
+                    if(data.correct){
+
+                        var form1 = document.getElementById("add");
+                        form1.style.display = "none";
+
+                        var favoriteCitiesList = document.getElementById('favoriteCitiesList');
+
+                        var cityItem3 = document.createElement('li');
+                        cityItem3.innerHTML = city;
+                        cityItem3.classList.add('clickable');
+                        favoriteCitiesList.appendChild(cityItem3);
+
+                        cityItem3.addEventListener('click', function() {
+                            // real time weather
+                            var searchButton = document.getElementById('search_btn');
+                            var cityNameInput = document.getElementById('cityform');
+                            cityNameInput.value = city; 
+                            searchButton.click(); 
+                            // forecast
+                            var searchButtonForecast = document.getElementById('search_btn_forecast');
+                            var cityNameInputForecast = document.getElementById('city-search-forecast');
+                            cityNameInputForecast.value = city; 
+                            searchButtonForecast.click(); 
+
+                            // past stats
+                            var searchButtonPast = document.getElementById('search_btn_past');
+                            var cityNameInputPast = document.getElementById('city-search-past');
+                            cityNameInputPast.value = city; 
+                            searchButtonPast.click(); 
+                        });
+                        
+                    }
+                    // Assicurati di analizzare correttamente la risposta JSON
+
+                })
+                .catch(error => console.error('Errore nella richiesta: ' + error));
+        });
+    });
 </script>

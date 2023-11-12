@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1aproto/searchforecast.proto\x12\x05proto\"%\n\x15SearchForecastRequest\x12\x0c\n\x04\x63ity\x18\x01 \x01(\t\"|\n\x03\x44\x61y\x12\x0c\n\x04\x64\x61te\x18\x01 \x01(\t\x12\x17\n\x0fmin_temperature\x18\x02 \x01(\x02\x12\x17\n\x0fmax_temperature\x18\x03 \x01(\x02\x12\x10\n\x08humidity\x18\x04 \x01(\x02\x12\x0f\n\x07weather\x18\x05 \x01(\t\x12\x12\n\nwind_speed\x18\x06 \x01(\x02\"\xb6\x01\n\x13SearchForecastReply\x12\x0f\n\x07\x63orrect\x18\x01 \x01(\x08\x12\x0c\n\x04\x63ity\x18\x02 \x01(\t\x12\x18\n\x04\x64\x61y1\x18\x03 \x01(\x0b\x32\n.proto.Day\x12\x18\n\x04\x64\x61y2\x18\x04 \x01(\x0b\x32\n.proto.Day\x12\x18\n\x04\x64\x61y3\x18\x05 \x01(\x0b\x32\n.proto.Day\x12\x18\n\x04\x64\x61y4\x18\x06 \x01(\x0b\x32\n.proto.Day\x12\x18\n\x04\x64\x61y5\x18\x07 \x01(\x0b\x32\n.proto.Day2X\n\x10SearcherForecast\x12\x44\n\x06Search\x12\x1c.proto.SearchForecastRequest\x1a\x1a.proto.SearchForecastReply\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1aproto/searchforecast.proto\x12\x05proto\"%\n\x15SearchForecastRequest\x12\x0c\n\x04\x63ity\x18\x01 \x01(\t\"|\n\x03\x44\x61y\x12\x0c\n\x04\x64\x61te\x18\x01 \x01(\t\x12\x17\n\x0fmin_temperature\x18\x02 \x01(\x02\x12\x17\n\x0fmax_temperature\x18\x03 \x01(\x02\x12\x10\n\x08humidity\x18\x04 \x01(\x02\x12\x0f\n\x07weather\x18\x05 \x01(\t\x12\x12\n\nwind_speed\x18\x06 \x01(\x02\"\xa5\x01\n\x13SearchForecastReply\x12\x0c\n\x04\x63ity\x18\x02 \x01(\t\x12\x18\n\x04\x64\x61y1\x18\x03 \x01(\x0b\x32\n.proto.Day\x12\x18\n\x04\x64\x61y2\x18\x04 \x01(\x0b\x32\n.proto.Day\x12\x18\n\x04\x64\x61y3\x18\x05 \x01(\x0b\x32\n.proto.Day\x12\x18\n\x04\x64\x61y4\x18\x06 \x01(\x0b\x32\n.proto.Day\x12\x18\n\x04\x64\x61y5\x18\x07 \x01(\x0b\x32\n.proto.Day2X\n\x10SearcherForecast\x12\x44\n\x06Search\x12\x1c.proto.SearchForecastRequest\x1a\x1a.proto.SearchForecastReply\"\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -25,7 +25,7 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _globals['_DAY']._serialized_start=76
   _globals['_DAY']._serialized_end=200
   _globals['_SEARCHFORECASTREPLY']._serialized_start=203
-  _globals['_SEARCHFORECASTREPLY']._serialized_end=385
-  _globals['_SEARCHERFORECAST']._serialized_start=387
-  _globals['_SEARCHERFORECAST']._serialized_end=475
+  _globals['_SEARCHFORECASTREPLY']._serialized_end=368
+  _globals['_SEARCHERFORECAST']._serialized_start=370
+  _globals['_SEARCHERFORECAST']._serialized_end=458
 # @@protoc_insertion_point(module_scope)

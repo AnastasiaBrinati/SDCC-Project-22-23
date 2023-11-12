@@ -7,7 +7,7 @@ from proto import discovery_pb2_grpc
 """
 Known beforehand, you must have someplace to start the connection with the rest of the system
 """
-DISCOVERY_SERVER = 'api-gateway:50050'
+DISCOVERY_SERVER = 'src-api-gateway-1:50050'
 
 """
 Try to connect with the api-gateway to start the communication.
@@ -27,7 +27,12 @@ def sendLoginInfo(username, password):
                 # Discovery server not available.
                 time.sleep(5)
                 continue
-            return reply.correct
+            cities = []
+            cities.append(reply.city1)
+            cities.append(reply.city2)
+            cities.append(reply.city3)
+
+            return reply.correct, cities
         
         except:
             # Problema nella connessione con il server.

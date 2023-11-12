@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15proto/searchnow.proto\x12\x05proto\" \n\x10SearchNowRequest\x12\x0c\n\x04\x63ity\x18\x01 \x01(\t\"j\n\x0eSearchNowReply\x12\x0f\n\x07\x63orrect\x18\x01 \x01(\x08\x12\x0c\n\x04\x63ity\x18\x02 \x01(\t\x12\x13\n\x0btemperature\x18\x03 \x01(\x02\x12\x10\n\x08humidity\x18\x04 \x01(\x02\x12\x12\n\ncloudiness\x18\x05 \x01(\t2I\n\x0bSearcherNow\x12:\n\x06Search\x12\x17.proto.SearchNowRequest\x1a\x15.proto.SearchNowReply\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15proto/searchnow.proto\x12\x05proto\" \n\x10SearchNowRequest\x12\x0c\n\x04\x63ity\x18\x01 \x01(\t\"Y\n\x0eSearchNowReply\x12\x0c\n\x04\x63ity\x18\x02 \x01(\t\x12\x13\n\x0btemperature\x18\x03 \x01(\x02\x12\x10\n\x08humidity\x18\x04 \x01(\x02\x12\x12\n\ncloudiness\x18\x05 \x01(\t2I\n\x0bSearcherNow\x12:\n\x06Search\x12\x17.proto.SearchNowRequest\x1a\x15.proto.SearchNowReply\"\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -23,7 +23,7 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _globals['_SEARCHNOWREQUEST']._serialized_start=32
   _globals['_SEARCHNOWREQUEST']._serialized_end=64
   _globals['_SEARCHNOWREPLY']._serialized_start=66
-  _globals['_SEARCHNOWREPLY']._serialized_end=172
-  _globals['_SEARCHERNOW']._serialized_start=174
-  _globals['_SEARCHERNOW']._serialized_end=247
+  _globals['_SEARCHNOWREPLY']._serialized_end=155
+  _globals['_SEARCHERNOW']._serialized_start=157
+  _globals['_SEARCHERNOW']._serialized_end=230
 # @@protoc_insertion_point(module_scope)

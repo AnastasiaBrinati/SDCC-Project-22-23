@@ -18,8 +18,8 @@ services:
     ports:
       - 5000:5000
 
-  login:
-    build: ./login
+  user:
+    build: ./user
     user: root
     ports:
       - 50051:50051
@@ -55,7 +55,7 @@ services:
 # utilities
   
   mysql:
-    build: ./db-login
+    build: ./db-user
     volumes:
       - todo-mysql-data:/var/lib/mysql
     environment: 
