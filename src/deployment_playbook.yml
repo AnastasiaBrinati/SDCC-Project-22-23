@@ -17,6 +17,8 @@
     command: curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
   - name: Install Minikube
     command: sudo install minikube-linux-amd64 /usr/local/bin/minikube
+  - name: change user group
+    command: sudo usermod -aG docker $USER && newgrp docker 
   - name: Install Kubectl utility
     command: curl -LO https://dl.k8s.io/release/v1.28.3/bin/linux/amd64/kubectl
   - name: chmod kubectl
