@@ -5,7 +5,6 @@
   - name: Install Docker
     expect:
       command: sudo yum install docker
-      responses:
       Question:
         - y
   - name: docker usermod
