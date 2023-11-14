@@ -1,5 +1,5 @@
 - hosts: localhost
-  pre_tasks:
+  tasks:
   - name: sudo yum update
     command: sudo yum update
   - name: Install Docker
@@ -25,7 +25,6 @@
     command: sudo chmod +x ./kubectl
   - name: mv kubectl
     command: sudo mv ./kubectl /usr/local/bin/
-  tasks:
   - name: Update(or clone) the Git repository
     git:
       repo: https://github.com/AnastasiaBrinati/SDCC_project_22-23.git
