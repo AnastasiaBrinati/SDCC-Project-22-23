@@ -1,29 +1,32 @@
 - hosts: localhost
   pre_tasks:
-  - name: Update(or clone) the Git repository
-    git:
-      repo: https://github.com/AnastasiaBrinati/SDCC_project_22-23.git
-      dest: /home/ubuntu/CloudyDays
-      update: yes
-  - name: sudo apt update
-    command: sudo apt-get update -y
-  - name: sudo apt upgrade
-    command: sudo apt-get upgrade -y
+  - name: sudo yum update
+    command: sudo yum update
   - name: Install Docker
-    ansible.builtin.shell: cd ~ && curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
-  - name: Install Minikube dependencies
-    command: sudo apt install -y curl wget apt-transport-https
+    command: sudo yum install docker
+  - name: docker usermod
+    command: sudo usermod -a -G docker ec2-user
+  - name: enable docker as service
+    command: sudo systemctl enable docker.service
+  - name: start docker service
+    command: sudo systemctl start docker.service
   - name: Download Minikube Binary
-    command: curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    command: sudo curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
   - name: Install Minikube
     command: sudo install minikube-linux-amd64 /usr/local/bin/minikube
   - name: change user group
-    command: sudo usermod -aG docker $USER && newgrp docker 
-  - name: Install Kubectl utility
-    command: curl -LO https://dl.k8s.io/release/v1.28.3/bin/linux/amd64/kubectl
+    command: sudo usermod -aG docker $USER && newgrp docker
+  - name: download kubectl
+    command: sudo curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
   - name: chmod kubectl
     command: sudo chmod +x ./kubectl
   - name: mv kubectl
     command: sudo mv ./kubectl /usr/local/bin/
+  tasks:
+  - name: Update(or clone) the Git repository
+    git:
+      repo: https://github.com/AnastasiaBrinati/SDCC_project_22-23.git
+      dest: /home/ec2-user/CloudyDays
+      update: yes
   - name: Minikube Start
-    command: sudo minikube start --vm-driver docker
+    command: minikube start
