@@ -5,8 +5,9 @@
   - name: Install Docker
     expect:
       command: sudo yum install docker
-      Question:
-        - y
+      responses:
+        Question:
+          - y
   - name: docker usermod
     command: sudo usermod -a -G docker ec2-user
   - name: enable docker as service
