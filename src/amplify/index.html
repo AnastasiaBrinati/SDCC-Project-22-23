@@ -6,7 +6,10 @@
     <link rel="stylesheet" type="text/css" href="static/style.css">
     <title>Cloudy Days - Previsioni Meteo</title>
 </head>
-    
+
+<script>
+    const base_url = "https://q23c2cikjl.execute-api.us-east-1.amazonaws.com/dev";
+</script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     var launchButton = document.getElementById('login_btn');
@@ -18,8 +21,8 @@ document.addEventListener('DOMContentLoaded', function () {
         var username = usernameform.value;
         var password = passwordform.value;
 
-        var url = 'https://ek340ix8u3.execute-api.us-east-1.amazonaws.com/dev/login';
-
+        var url = base_url + '/login';
+        console.log('Sending data:', JSON.stringify({ username: username, password: password }));
         fetch(url, {
             method: 'POST',
             body: JSON.stringify({ username: username, password: password }),
@@ -31,63 +34,63 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
             console.log('Data:', data);
 
-            // Analizza il campo "body" contenente una stringa JSON
-            var bodyData = JSON.parse(data.body);
+            // Estrai i campi dal body
+            var responseData = data.body ? JSON.parse(data.body) : data;
 
-            if (data.statusCode == 200) {
-                var usernamelab = document.getElementById('lab3');
-                usernamelab.innerHTML = bodyData.message;
-                usernamelab.style.display = "block";
+            var usernamelab = document.getElementById('lab3');
+            usernamelab.innerHTML = responseData.message;
+            usernamelab.style.display = "block";
 
-                var button1 = document.getElementById("login_btn");
-                var button2 = document.getElementById("logout_btn");
-                button1.style.display = "none";
-                button2.style.display = "block";
-                button2.style.float = "right";
+            var button1 = document.getElementById("login_btn");
+            var button2 = document.getElementById("logout_btn");
+            button1.style.display = "none";
+            button2.style.display = "block";
+            button2.style.float = "right";
 
-                // Nascondi il modulo di login
-                var loginForm = document.getElementById("loginForm");
-                loginForm.style.display = "none";
+            // Nascondi il modulo di login
+            var loginForm = document.getElementById("loginForm");
+            loginForm.style.display = "none";
 
-                // Aggiorna l'elenco delle città preferite
-                var favoriteCitiesList = document.getElementById('favoriteCitiesList');
-                favoriteCitiesList.innerHTML = ""; 
+            // Aggiorna l'elenco delle città preferite
+            var favoriteCitiesList = document.getElementById('favoriteCitiesList');
+            favoriteCitiesList.innerHTML = ""; 
 
-                if (bodyData.favorite_cities && Array.isArray(bodyData.favorite_cities)) {
-                    // Aggiungi le città preferite come elementi della lista
-                    bodyData.favorite_cities.forEach(function(city) {
-                        var cityItem = document.createElement('li');
-                        cityItem.textContent = city;
-                        cityItem.classList.add('clickable'); 
-                        favoriteCitiesList.appendChild(cityItem);
-                
-                        // Aggiungi un gestore di eventi per gestire il clic sulla città
-                        cityItem.addEventListener('click', function() {
-                            // Chiama lo script del meteo attuale 
-                            var searchButton = document.getElementById('search_btn');
-                            var cityNameInput = document.getElementById('cityform');
-                            cityNameInput.value = city; // Imposta il nome della città cliccata nell'input
-                            searchButton.click(); // Simula il clic sul pulsante di ricerca
+            if (responseData.favorite_cities && Array.isArray(responseData.favorite_cities)) {
+                // Aggiungi le città preferite come elementi della lista
+                responseData.favorite_cities.forEach(function(city) {
+                    var cityItem = document.createElement('li');
+                    cityItem.textContent = city;
+                    cityItem.classList.add('clickable'); 
+                    favoriteCitiesList.appendChild(cityItem);
+            
+                    // Aggiungi un gestore di eventi per gestire il clic sulla città
+                    cityItem.addEventListener('click', function() {
+                        // Chiama lo script del meteo attuale 
+                        var searchButton = document.getElementById('search_btn');
+                        var cityNameInput = document.getElementById('cityform');
+                        cityNameInput.value = city; // Imposta il nome della città cliccata nell'input
+                        searchButton.click(); // Simula il clic sul pulsante di ricerca
 
-                            // Chiama lo script delle previsioni meteo
-                            var searchButtonForecast = document.getElementById('search_btn_forecast');
-                            var cityNameInputForecast = document.getElementById('city-search-forecast');
-                            cityNameInputForecast.value = city; // Imposta il nome della città cliccata nell'input
-                            searchButtonForecast.click(); // Simula il clic sul pulsante di ricerca
+                        // Chiama lo script delle previsioni meteo
+                        var searchButtonForecast = document.getElementById('search_btn_forecast');
+                        var cityNameInputForecast = document.getElementById('city-search-forecast');
+                        cityNameInputForecast.value = city; // Imposta il nome della città cliccata nell'input
+                        searchButtonForecast.click(); // Simula il clic sul pulsante di ricerca
 
-                            // Chiama lo script delle statistiche meteo
-                            var searchButtonPast = document.getElementById('search_btn_past');
-                            var cityNameInputPast = document.getElementById('city-search-past');
-                            cityNameInputPast.value = city; // Imposta il nome della città cliccata nell'input
-                            searchButtonPast.click(); // Simula il clic sul pulsante di ricerca
-                        });
+                        // Chiama lo script delle statistiche meteo
+                        var searchButtonPast = document.getElementById('search_btn_past');
+                        var cityNameInputPast = document.getElementById('city-search-past');
+                        cityNameInputPast.value = city; // Imposta il nome della città cliccata nell'input
+                        searchButtonPast.click(); // Simula il clic sul pulsante di ricerca
                     });
-                }
+                });
             }
+        })
+        .catch(error => {
+            console.error('Errore nella richiesta:', error);
         });
     });
 });
-
 </script>
 <script>
     function imageStr(cloudiness) {
@@ -162,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var searchButton = document.getElementById('search_btn');
     searchButton.addEventListener('click', function () {
         var cityName = document.getElementById('cityform').value;
-        var url = `https://ek340ix8u3.execute-api.us-east-1.amazonaws.com/dev/realtime?cityName=${cityName}`;
+        var url = base_url+'/realtime?cityName=' + encodeURIComponent(cityName);
         fetch(url, {
             method: 'POST',
             body: JSON.stringify({ cityName: cityName }),
@@ -210,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var searchButton = document.getElementById('search_btn_forecast');
     searchButton.addEventListener('click', function () {
         var cityName = document.getElementById('city-search-forecast').value;
-        var url = `https://ek340ix8u3.execute-api.us-east-1.amazonaws.com/dev/forecast?cityName=${cityName}`;
+        var url = base_url + '/forecast?cityName=' + encodeURIComponent(cityName);
 
         fetch(url, {
             method: 'POST',
@@ -276,14 +279,126 @@ document.addEventListener('DOMContentLoaded', function () {
 <script>
     document.addEventListener('DOMContentLoaded', function () {
 
-    var addToFavoritesButton = document.getElementById('add_to_favorites_btn');
+    var addToFavoritesButton = document.getElementById('add_to_favorites_btn1');
     addToFavoritesButton.addEventListener('click', function () {
         var cityNameInput = document.getElementById('cityform');
         var cityName = cityNameInput.value;
 
         // chiamata all'API per aggiungere la città ai preferiti
         var username = document.getElementById('lab3').textContent; 
-        var favoritesUrl = 'https://ek340ix8u3.execute-api.us-east-1.amazonaws.com/dev/addfavorite';
+        var favoritesUrl = base_url + '/addfavorite';
+
+        fetch(favoritesUrl, {
+            method: 'POST',
+            body: JSON.stringify({ ID: username, cityName: cityName }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Città aggiunta ai preferiti:', data);
+
+            // aggiungi la città alla lista delle città preferite
+            var favoriteCitiesList = document.getElementById('favoriteCitiesList');
+            var cityItem = document.createElement('li');
+            cityItem.textContent = cityName;
+            cityItem.classList.add('clickable');
+            favoriteCitiesList.appendChild(cityItem);
+
+            
+            cityItem.addEventListener('click', function() {
+                // real time weather
+                var searchButton = document.getElementById('search_btn');
+                var cityNameInput = document.getElementById('cityform');
+                cityNameInput.value = cityName; 
+                searchButton.click(); 
+                // forecast
+                var searchButtonForecast = document.getElementById('search_btn_forecast');
+                var cityNameInputForecast = document.getElementById('city-search-forecast');
+                cityNameInputForecast.value = cityName; 
+                searchButtonForecast.click(); 
+
+                // past stats
+                var searchButtonPast = document.getElementById('search_btn_past');
+                var cityNameInputPast = document.getElementById('city-search-past');
+                cityNameInputPast.value = cityName; 
+                searchButtonPast.click(); 
+            });
+        })
+        .catch(error => console.error('Errore nell\'aggiunta della città ai preferiti: ' + error));
+    });
+});
+
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+    var addToFavoritesButton = document.getElementById('add_to_favorites_btn2');
+    addToFavoritesButton.addEventListener('click', function () {
+        var cityNameInput = document.getElementById('cityform');
+        var cityName = cityNameInput.value;
+
+        // chiamata all'API per aggiungere la città ai preferiti
+        var username = document.getElementById('lab3').textContent; 
+        var favoritesUrl = base_url + '/addfavorite';
+
+        fetch(favoritesUrl, {
+            method: 'POST',
+            body: JSON.stringify({ ID: username, cityName: cityName }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Città aggiunta ai preferiti:', data);
+
+            // aggiungi la città alla lista delle città preferite
+            var favoriteCitiesList = document.getElementById('favoriteCitiesList');
+            var cityItem = document.createElement('li');
+            cityItem.textContent = cityName;
+            cityItem.classList.add('clickable');
+            favoriteCitiesList.appendChild(cityItem);
+
+            
+            cityItem.addEventListener('click', function() {
+                // real time weather
+                var searchButton = document.getElementById('search_btn');
+                var cityNameInput = document.getElementById('cityform');
+                cityNameInput.value = cityName; 
+                searchButton.click(); 
+                // forecast
+                var searchButtonForecast = document.getElementById('search_btn_forecast');
+                var cityNameInputForecast = document.getElementById('city-search-forecast');
+                cityNameInputForecast.value = cityName; 
+                searchButtonForecast.click(); 
+
+                // past stats
+                var searchButtonPast = document.getElementById('search_btn_past');
+                var cityNameInputPast = document.getElementById('city-search-past');
+                cityNameInputPast.value = cityName; 
+                searchButtonPast.click(); 
+            });
+        })
+        .catch(error => console.error('Errore nell\'aggiunta della città ai preferiti: ' + error));
+    });
+});
+
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+    var addToFavoritesButton = document.getElementById('add_to_favorites_btn3');
+    addToFavoritesButton.addEventListener('click', function () {
+        var cityNameInput = document.getElementById('cityform');
+        var cityName = cityNameInput.value;
+
+        // chiamata all'API per aggiungere la città ai preferiti
+        var username = document.getElementById('lab3').textContent; 
+        var favoritesUrl = base_url + '/addfavorite';
 
         fetch(favoritesUrl, {
             method: 'POST',
@@ -334,7 +449,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var searchButton = document.getElementById('search_btn_past');
     searchButton.addEventListener('click', function () {
         var cityName = document.getElementById('city-search-past').value;
-        var url = `https://ek340ix8u3.execute-api.us-east-1.amazonaws.com/dev/paststatistics?cityName=${cityName}`;
+        var url = base_url + '/paststatistics?cityName='+encodeURIComponent(cityName);
 
         fetch(url, {
             method: 'POST',
@@ -398,11 +513,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // Handle the register
     var registerButton = document.getElementById('registerButton');
     registerButton.addEventListener('click', function () {
-        var email = document.getElementById('email').value;
-        var password = document.getElementById('password').value;
+        var email = document.getElementById('emailmodal').value;
+        var password = document.getElementById('passwordmodal').value;
 
         // Esegui la registrazione tramite l'API Gateway con email e password
-        var url = 'https://ek340ix8u3.execute-api.us-east-1.amazonaws.com/dev/register';
+        var url = base_url + '/register';
         fetch(url, {
             method: 'POST',
             body: JSON.stringify({ ID: email, password: password }),
@@ -446,9 +561,9 @@ document.addEventListener('DOMContentLoaded', function () {
         <div class="modal-content">
             <h2>Registration</h2>
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
+            <input type="email" id="emailmodal" name="email" required>
             <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
+            <input type="password" id="passwordmodal" name="password" required>
             <button id="registerButton">Register</button>
             <button id="cancelButton">Cancel</button>
         </div>
@@ -463,7 +578,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <input class="form-control" placeholder="Insert city name" type="text" id="cityform" name="inputCity" rows="1" required>
                         <p>
                         <button class="rounded-button" type="button" id="search_btn">Search</button>
-                        <button class="rounded-button" type="button" id="add_to_favorites_btn">Add to Favorites</button>
+                        <button class="rounded-button" type="button" id="add_to_favorites_btn1">Add to Favorites</button>
                         </p> 
                 </section>
             
@@ -494,7 +609,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <section>
                     <input class="form-control" placeholder="Insert city name" type="text" id="city-search-forecast" name="inputCity" rows="1" required>
                     <button class="rounded-button" type="button" id="search_btn_forecast">Search</button>
-                    <button class="rounded-button" type="button" id="add_to_favorites_btn">Add to Favorites</button>
+                    <button class="rounded-button" type="button" id="add_to_favorites_btn2">Add to Favorites</button>
                 </section>
             
         </form>
@@ -502,7 +617,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <section class="weather-container">
         <div class="day-card" id="day0" style="display: none">
             <h2 id='date0'></h2>
-            <img id="img_0">
+            <img id="img0">
             <p>Max temp: <span class="temperature" id='max_temp0'></span></p>
             <p>Min temp: <span class="temperature" id='min_temp0'></span></p>
             <p>Wind speed: <span class="temperature" id='wind_speed0'></span></p>
@@ -511,7 +626,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
         <div class="day-card" id="day1" style="display: none">
             <h2 id='date1'></h2>
-            <img id="img_1">
+            <img id="img1">
             <p>Max temp: <span class="temperature" id='max_temp1'></span></p>
             <p>Min temp: <span class="temperature" id='min_temp1'></span></p>
             <p>Wind speed: <span class="temperature" id='wind_speed1'></span></p>
@@ -520,7 +635,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
         <div class="day-card" id="day2" style="display: none">
             <h2 id='date2'></h2>
-            <img id="img_2">
+            <img id="img2">
             <p>Max temp: <span class="temperature" id='max_temp2'></span></p>
             <p>Min temp: <span class="temperature" id='min_temp2'></span></p>
             <p>Wind speed: <span class="temperature" id='wind_speed2'></span></p>
@@ -529,7 +644,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
         <div class="day-card" id="day3" style="display: none">
             <h2 id='date3'></h2>
-            <img id="img_3">
+            <img id="img3">
             <p>Max temp: <span class="temperature" id='max_temp3'></span></p>
             <p>Min temp: <span class="temperature" id='min_temp3'></span></p>
             <p>Wind speed: <span class="temperature" id='wind_speed3'></span></p>
@@ -538,7 +653,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
         <div class="day-card" id="day4" style="display: none">
             <h2 id='date4'></h2>
-            <img id="img_4">
+            <img id="img4">
             <p>Max temp: <span class="temperature" id='max_temp4'></span></p>
             <p>Min temp: <span class="temperature" id='min_temp4'></span></p>
             <p>Wind speed: <span class="temperature" id='wind_speed4'></span></p>
@@ -547,7 +662,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
         <div class="day-card" id="day5" style="display: none">
             <h2 id='date5'></h2>
-            <img id="img_5">
+            <img id="img5">
             <p>Max temp: <span class="temperature" id='max_temp5'></span></p>
             <p>Min temp: <span class="temperature" id='min_temp5'></span></p>
             <p>Wind speed: <span class="temperature" id='wind_speed5'></span></p>
@@ -563,7 +678,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <input class="form-control" placeholder="Insert city name" type="text" id="city-search-past" name="inputCity" rows="1" required>
                         <p>
                         <button class="rounded-button" type="button" id="search_btn_past">Search</button>
-                        <button class="rounded-button" type="button" id="add_to_favorites_btn">Add to Favorites</button>
+                        <button class="rounded-button" type="button" id="add_to_favorites_btn3">Add to Favorites</button>
                         </p> 
                 </section>
             
