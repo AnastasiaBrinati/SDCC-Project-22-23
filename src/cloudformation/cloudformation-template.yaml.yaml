@@ -1,0 +1,1210 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: AWS API Gateway with Two Lambda Integrations
+
+Parameters:
+  
+  DynamoDBTableName:
+    Type: String
+    Default: UsersTable
+    Description: The name for the DynamoDB Table.
+  LoginFunctionName:
+    Type: String
+    Default: LoginFunction
+    Description: The name for the LoginFunction.
+  RegistrationFunctionName:
+    Type: String
+    Default: RegistrationFunction
+    Description: The name for the RegitrationFunction.
+  ApiGatewayRestName:
+    Type: String
+    Default: ApiGatewayRest
+    Description: The name for the api gateway.
+  AddFavoriteCityFunctionName:
+    Type: String
+    Default: AddFavoriteCityFunction
+    Description: The name for the function.
+  RealtimeWeatherFunctionName:
+    Type: String
+    Default: RealtimeWeatherFunction
+    Description: The name for the function.
+  WeatherForecastFunctionName:
+    Type: String
+    Default: WeatherForecastFunction
+    Description: The name for the function.
+  PastWeatherStatisticsFunctionName:
+    Type: String
+    Default: PastWeatherStatisticsFunction
+    Description: The name for the function.
+
+
+ 
+Resources:
+  DynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref DynamoDBTableName
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  ApiGatewayRestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      ApiKeySourceType: HEADER
+      Description: An API Gateway with Lambda Integrations
+      EndpointConfiguration:
+        Types:
+          - EDGE
+      Name: !Ref ApiGatewayRestName
+
+#________________________________________________________________LOGIN__________________________________________________________________________________________
+
+  ApiGatewayResource1:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: 'login'
+      RestApiId: !Ref ApiGatewayRestApi
+
+  ApiGatewayMethod1:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        ConnectionType: INTERNET
+        Credentials: arn:aws:iam::225712706856:role/LabRole
+        IntegrationHttpMethod: POST
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LoginFunction.Arn}/invocations'
+      OperationName: 'lambda1'
+      ResourceId: !Ref ApiGatewayResource1
+      RestApiId: !Ref ApiGatewayRestApi
+
+  ApiGatewayMethodOptions1:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      ResourceId: !Ref ApiGatewayResource1
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'POST'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            StatusCode: 200
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: 200
+
+  LoginFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import os
+
+          dynamodb = boto3.client('dynamodb')
+          table_name = os.environ['DynamoDBTableName']
+
+          def check_credentials(username, password):
+              # Interroga la tabella DynamoDB
+              response = dynamodb.get_item(
+                  TableName=table_name,
+                  Key={
+                      'id': {'S': username}
+                  }
+              )
+              
+              item = response.get('Item')
+              if not item:
+                  return None
+
+              stored_password = item['password']['S']
+
+              if password == stored_password:
+                  # Se le credenziali sono valide, restituisci la lista di città preferite (fav_cities)
+                  if 'fav_cities' in item:
+                      favorite_cities = item['fav_cities']['SS']
+                  else:
+                      favorite_cities = []
+
+                  return favorite_cities
+              else:
+                  return None
+
+          def lambda_handler(event, context):
+              # Estrai l'username e la password dall'evento
+              try:
+                  body = json.loads(event['body'])
+                  username = body['username']
+                  password = body['password']
+              except KeyError as e:
+                  return {
+                      'statusCode': 400,
+                      'headers': {
+                          'Access-Control-Allow-Headers': 'Content-Type',
+                          'Access-Control-Allow-Origin': '*',
+                          'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                      },
+                      'body': json.dumps({'error': f'Missing key in request: {str(e)}', 'event': event})
+                  }
+
+              if not username or not password:
+                  return {
+                      'statusCode': 400,
+                      'headers': {
+                          'Access-Control-Allow-Headers': 'Content-Type',
+                          'Access-Control-Allow-Origin': '*',
+                          'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                      },
+                      'body': json.dumps('You must enter both username and password.')
+                  }
+
+              # Check credentials
+              favorite_cities = check_credentials(username, password)
+              if favorite_cities is None:
+                  response = {
+                  'statusCode': 401,
+                  'headers': {
+                          'Access-Control-Allow-Headers': 'Content-Type',
+                          'Access-Control-Allow-Origin': '*',
+                          'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                      },
+                  'body': 'Failed login.'}
+              else:
+                  response = {
+                      'statusCode': 200,
+                      'headers': {
+                          'Access-Control-Allow-Headers': 'Content-Type',
+                          'Access-Control-Allow-Origin': '*',
+                          'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                      },
+                      'body': json.dumps({'message': username, 'favorite_cities': favorite_cities})
+                  }
+                  
+              return response
+
+
+      Description: AWS Lambda function 1
+      FunctionName: !Ref LoginFunctionName
+      Handler: index.lambda_handler
+      MemorySize: 256
+      Role: arn:aws:iam::225712706856:role/LabRole
+      Environment:
+        Variables:
+          DynamoDBTableName: !Ref DynamoDBTableName
+      Runtime: python3.7
+      Timeout: 60
+
+#________________________________________________________________REGISTRATION__________________________________________________________________________________________
+
+  ApiGatewayResource2:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: 'register'
+      RestApiId: !Ref ApiGatewayRestApi
+
+  ApiGatewayMethod2:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        ConnectionType: INTERNET
+        Credentials: arn:aws:iam::225712706856:role/LabRole
+        IntegrationHttpMethod: POST
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${RegistrationFunction.Arn}/invocations'
+      OperationName: 'lambda1'
+      ResourceId: !Ref ApiGatewayResource2
+      RestApiId: !Ref ApiGatewayRestApi
+
+  ApiGatewayMethodOptions2:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      ResourceId: !Ref ApiGatewayResource2
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'POST'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            StatusCode: 200
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: 200
+
+  RegistrationFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import os
+
+          dynamodb = boto3.client('dynamodb')
+          table_name = os.environ['DynamoDBTableName']
+
+          def register_user(username, password):
+              # Inserisci l'utente nella tabella DynamoDB
+              dynamodb.put_item(
+                  TableName=table_name,
+                  Item={
+                      'id': {'S': username},
+                      'password': {'S': password}
+                  }
+              )
+
+          def lambda_handler(event, context):
+              # Estrai l'username e la password dall'evento
+              try:
+                  body = json.loads(event['body'])
+                  username = body['ID']
+                  password = body['password']
+              except KeyError as e:
+                  return {
+                      'statusCode': 400,
+                      'headers': {
+                          'Access-Control-Allow-Headers': 'Content-Type',
+                          'Access-Control-Allow-Origin': '*',
+                          'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                      },
+                      'body': json.dumps({'error': f'Missing key in request: {str(e)}', 'event': event})
+                  }
+
+              if not username or not password:
+                  return {
+                      'statusCode': 400,
+                      'headers': {
+                          'Access-Control-Allow-Headers': 'Content-Type',
+                          'Access-Control-Allow-Origin': '*',
+                          'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                      },
+                      'body': json.dumps('You must enter both username and password.')
+                  
+                  }
+
+              # Registra l'utente
+              register_user(username, password)
+              
+              response = {
+                  'statusCode': 200,
+                  'headers': {
+                          'Access-Control-Allow-Headers': 'Content-Type',
+                          'Access-Control-Allow-Origin': '*',
+                          'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                      },
+                  'body': json.dumps('User registered successfully.')
+              }
+
+              return response
+
+
+      Description: AWS Lambda function 2
+      FunctionName: !Ref RegistrationFunctionName
+      Handler: index.lambda_handler
+      MemorySize: 256
+      Role: arn:aws:iam::225712706856:role/LabRole
+      Environment:
+        Variables:
+          DynamoDBTableName: !Ref DynamoDBTableName
+      Runtime: python3.7
+      Timeout: 60
+
+#_______________________________________________________________ADDFAVORITECITY___________________________________________________________________________________________
+  ApiGatewayResource3:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: 'addfavorite'
+      RestApiId: !Ref ApiGatewayRestApi
+
+  ApiGatewayMethod3:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        ConnectionType: INTERNET
+        Credentials: arn:aws:iam::225712706856:role/LabRole
+        IntegrationHttpMethod: POST
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddFavoriteCityFunction.Arn}/invocations'
+      OperationName: 'lambda3'
+      ResourceId: !Ref ApiGatewayResource3
+      RestApiId: !Ref ApiGatewayRestApi
+
+  ApiGatewayMethodOptions3:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      ResourceId: !Ref ApiGatewayResource3
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'POST'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            StatusCode: 200
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: 200
+
+  AddFavoriteCityFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import logging
+          import os
+
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          dynamodb = boto3.client('dynamodb')
+          table_name = os.environ['DynamoDBTableName']
+
+          def lambda_handler(event, context):
+              body = json.loads(event['body'])
+              user_id = body.get('ID')
+              new_city = body.get('cityName')
+
+              if not user_id or not new_city:
+                  return {
+                      'statusCode': 400,
+                      'headers': {
+                          'Access-Control-Allow-Headers': 'Content-Type',
+                          'Access-Control-Allow-Origin': '*',
+                          'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+                          'Content-Type': 'application/json'
+                      },
+                      'body': json.dumps('Alcuni dati mancanti.')
+                  }
+
+
+              try:
+                  # Ottieni i dati
+                  response = dynamodb.get_item(
+                      TableName=table_name,
+                      Key={'id': {'S': user_id}}
+                  )
+                  
+                  if 'Item' in response:
+                      user_data = response['Item']
+                      favorite_cities = user_data.get('fav_cities', {'SS': []})
+                      
+                      # Aggiungi la città se è nuova
+                      if new_city not in favorite_cities['SS']:
+                          favorite_cities['SS'].append(new_city)
+                          
+                      # Filtra gli elementi vuoti dalla lista delle città preferite
+                      favorite_cities['SS'] = [city for city in favorite_cities['SS'] if city.strip()]
+                      
+                      # Aggiorna l'oggetto nella tabella
+                      response = dynamodb.update_item(
+                          TableName=table_name,
+                          Key={'id': {'S': user_id}},
+                          UpdateExpression='SET fav_cities = :fav_cities',
+                          ExpressionAttributeValues={':fav_cities': {'SS': favorite_cities['SS']}}
+                      )
+
+
+                      if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                          return {
+                              'statusCode': 200,
+                              'headers': {
+                                  'Access-Control-Allow-Headers': 'Content-Type',
+                                  'Access-Control-Allow-Origin': '*',
+                                  'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+                                  'Content-Type': 'application/json'
+                              },
+                              'body': json.dumps(f'La città {new_city} è stata aggiunta alle città preferite dell\'utente.')
+                          }
+                      else:
+                          return {
+                              'statusCode': 500,
+                              'headers': {
+                                  'Access-Control-Allow-Headers': 'Content-Type',
+                                  'Access-Control-Allow-Origin': '*',
+                                  'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+                                  'Content-Type': 'application/json'
+                              },
+                              'body': json.dumps('Si è verificato un errore durante l\'aggiornamento delle città preferite.')
+                          }
+                  else:
+                      return {
+                          'statusCode': 404,
+                          'headers': {
+                            'Access-Control-Allow-Headers': 'Content-Type',
+                            'Access-Control-Allow-Origin': '*',
+                            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+                            'Content-Type': 'application/json'
+                          },
+                          'body': json.dumps('Utente non trovato.')
+                      }
+              except Exception as e:
+                  return {
+                      'statusCode': 500,
+                      'headers': {
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+                        'Content-Type': 'application/json'
+                      },
+                      'body': json.dumps(f'Errore: {str(e)}')
+                  }
+      Description: AWS Lambda function 3
+      FunctionName: !Ref AddFavoriteCityFunctionName
+      Handler: index.lambda_handler
+      MemorySize: 256
+      Role: arn:aws:iam::225712706856:role/LabRole
+      Environment:
+        Variables:
+          DynamoDBTableName: !Ref DynamoDBTableName
+      Runtime: python3.7
+      Timeout: 60
+#_______________________________________________________________REALTIME___________________________________________________________________________________________
+  ApiGatewayResource4:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: 'realtime'
+      RestApiId: !Ref ApiGatewayRestApi
+
+  ApiGatewayMethod4:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        ConnectionType: INTERNET
+        Credentials: arn:aws:iam::225712706856:role/LabRole
+        IntegrationHttpMethod: POST
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${RealtimeWeatherFunction.Arn}/invocations'
+      OperationName: 'lambda4'
+      ResourceId: !Ref ApiGatewayResource4
+      RestApiId: !Ref ApiGatewayRestApi
+
+  ApiGatewayMethodOptions4:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      ResourceId: !Ref ApiGatewayResource4
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'POST'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            StatusCode: 200
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: 200
+
+  RealtimeWeatherFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: |
+          import json
+          import logging
+          import os
+          import redis
+          from redis import Redis,exceptions
+          import requests
+
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          def lambda_handler(event, context):
+              # Redis variables
+              redis_connection = None
+              redis_endpoint = None
+              redis_auth = None
+
+              if "REDIS_HOST" in os.environ and "REDIS_AUTH" in os.environ:
+                  redis_endpoint = os.environ["REDIS_HOST"]
+                  redis_auth = os.environ["REDIS_AUTH"]
+                  logger.info("Redis endpoint: " + redis_endpoint)
+              else:
+                  logger.info("Please configure the environment variables!")
+                  return {
+                      'statusCode': 500,
+                      'headers': {
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                      }
+                  }
+
+              try:
+                  logger.info('Starting Redis connection')
+                  redis_connection = redis.StrictRedis(
+                      host=redis_endpoint,
+                      port=6379,
+                      password=redis_auth,
+                      decode_responses=True
+                  )
+                  logger.info("Connected to Redis")
+
+                  api_key = "05ced024503818ece32866ca89f2cfe1"
+                  body = json.loads(event['body'])
+                  location = body['cityName']
+                  city_name = location  
+                  logger.info("City name: " + city_name)
+
+                  # Verifica se i dati sono presenti in cache
+                  key = city_name+"_real_time"
+                  cached_data = None
+                  try:
+                      cached_data = redis_connection.get(key)
+                  except redis.exceptions.ResponseError as ex:
+                      if "MOVED" in str(ex):
+                          logger.info("Moved exception")
+                          
+                          # Estrai l'indirizzo IP e la porta del nuovo nodo Redis
+                          new_location = str(ex).split(' ')[-1]
+                          new_host, new_port = new_location.split(':')
+
+                          # Riconnetti la connessione al nuovo nodo Redis
+                          redis_connection = redis.StrictRedis(
+                              host=new_host,
+                              port=int(new_port),
+                              password=redis_auth,
+                              decode_responses=True
+                          )
+
+                          # Ripeti il comando Redis
+                          cached_data = redis_connection.get(key)
+                      else:
+                          logger.info(str(ex))
+
+                  if cached_data:
+                      logger.info("There is cache data")
+                      # Se i dati sono in cache li restituisce subito
+                      return {
+                          'statusCode': 200,
+                          'body': cached_data,
+                          'headers': {
+                                  'Access-Control-Allow-Headers': 'Content-Type',
+                                  'Access-Control-Allow-Origin': '*',
+                                  'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                              }
+                      }
+
+                  logger.info("There is no cache data")
+
+                  url = f"https://api.openweathermap.org/data/2.5/weather"
+                  params = {
+                      "q": location,
+                      "appid": api_key,
+                      "units": "metric"  
+                  }
+
+                  response = requests.get(url, params=params)
+                  logger.info("Request done.")
+                  if response.status_code == 200:
+                      data = response.json()
+                      temperature = data.get("main", {}).get("temp")
+                      humidity = data.get("main", {}).get("humidity")
+                      weather = data.get("weather", [])[0].get("description")
+
+                      response_data = {
+                          "cityName": location,
+                          "temperature": temperature,
+                          "humidity": humidity,
+                          "weather": weather
+                      }
+
+                      # Memorizza i dati in cache per mezz'ora
+                      timeout = 60*30 
+                      redis_connection.setex(key, timeout, json.dumps(response_data))
+                      logger.info("Cached the new data.")
+                      return {
+                          'statusCode': 200,
+                          'body': json.dumps(response_data),
+                          'headers': {
+                                  'Access-Control-Allow-Headers': 'Content-Type',
+                                  'Access-Control-Allow-Origin': '*',
+                                  'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                              }
+                      }
+                  else:
+                      return {
+                          'statusCode': response.status_code,
+                          'headers': {
+                                  'Access-Control-Allow-Headers': 'Content-Type',
+                                  'Access-Control-Allow-Origin': '*',
+                                  'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                              },
+                          'body': 'Errore nella richiesta.'
+                      }
+              except Exception as ex:
+                  error_message = str(ex)
+                  return {
+                      'statusCode': 500,
+                      'body': json.dumps({'error': error_message}),
+                      'headers': {
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                      }
+                  }
+      Description: AWS Lambda function 4
+      FunctionName: !Ref RealtimeWeatherFunctionName
+      Handler: index.lambda_handler
+      MemorySize: 256
+      Role: arn:aws:iam::225712706856:role/LabRole
+      Environment:
+        Variables:
+          REDIS_AUTH: ''
+          REDIS_HOST: weatherapp-redis-cluster.rg5ccp.clustercfg.use1.cache.amazonaws.com
+          REDIS_PORT: '6379'
+          DynamoDBTableName: !Ref DynamoDBTableName
+      Layers:
+        - arn:aws:lambda:us-east-1:225712706856:layer:my-redis-layer:1
+        - arn:aws:lambda:us-east-1:225712706856:layer:my-requests-layer:1
+        - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python311:2
+      Runtime: python3.7
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0094b71f6fad4a472 
+          - sg-00bb091f7ea8fc78a 
+        SubnetIds:
+          - subnet-088ce7ca2d1160609
+          - subnet-041b0ec7dddc6b78c
+        Ipv6AllowedForDualStack: false
+      Timeout: 60
+#_______________________________________________________________FORECAST___________________________________________________________________________________________
+  ApiGatewayResource5:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: 'forecast'
+      RestApiId: !Ref ApiGatewayRestApi
+
+  ApiGatewayMethod5:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        ConnectionType: INTERNET
+        Credentials: arn:aws:iam::225712706856:role/LabRole
+        IntegrationHttpMethod: POST
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WeatherForecastFunction.Arn}/invocations'
+      OperationName: 'lambda5'
+      ResourceId: !Ref ApiGatewayResource5
+      RestApiId: !Ref ApiGatewayRestApi
+
+  ApiGatewayMethodOptions5:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      ResourceId: !Ref ApiGatewayResource5
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'POST'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            StatusCode: 200
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: 200
+
+  WeatherForecastFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: |
+          import json
+          import requests
+          import pandas as pd
+          from redis import Redis, exceptions
+          import logging
+          import os
+          import datetime
+
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          def lambda_handler(event, context):
+              redis_connection = None
+              redis_port = None
+              redis_endpoint = None
+              redis_auth = None
+
+              if "REDIS_HOST" in os.environ and "REDIS_AUTH" in os.environ and "REDIS_PORT" in os.environ:
+                  redis_endpoint = os.environ["REDIS_HOST"]
+                  redis_port = os.environ["REDIS_PORT"]
+                  redis_auth = os.environ["REDIS_AUTH"]
+                  logger.info("redis endpoint : " + redis_endpoint)
+              else:
+                  logger.info("You have to configure the environment variables.")
+                  return {
+                      'statusCode': 500,
+                      'headers': {
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                      }
+                  }
+
+              try:
+                  logger.info('Starting redis connection')
+                  redis_connection = Redis(host=redis_endpoint, port=redis_port, decode_responses=True)
+                  logger.info("Connected to the redis server.")
+
+                  api_key = "d75ac4658ee83ef23ebf68c99c846f2a"
+
+                  # Ottieni la città dalla richiesta
+                  body = json.loads(event['body'])
+                  city_name = body['cityName']
+                  logger.info("City : " + city_name)
+
+                  # Calcola la data di domani
+                  tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+
+                  # Converti la data di domani in una stringa
+                  tomorrow_str = tomorrow.strftime('%Y-%m-%d')
+
+                  # Verifica se i dati sono presenti in cache
+                  key = city_name + "_forecast"
+                  logger.info("Checking if data is in cache.")
+
+                  try:
+                      cached_data = redis_connection.get(key)
+                  except exceptions.ResponseError as ex:
+                      if "MOVED" in str(ex):
+                          # Estrai l'indirizzo IP e la porta del nuovo nodo Redis
+                          new_location = str(ex).split(' ')[-1]
+                          
+                          # Riconnetti la connessione al nuovo nodo Redis
+                          new_host, new_port = new_location.split(':')
+                          redis_connection = Redis(host=new_host, port=int(new_port), decode_responses=True)
+                          
+                          # Ripeti il comando Redis
+                          cached_data = redis_connection.get(key)
+
+                  if cached_data:
+                      logger.info("Cache hit.")
+                      # Se i dati sono in cache, restituiscili direttamente come risposta
+                      return {
+                          'statusCode': 200,
+                          'body': cached_data,
+                          'headers': {
+                            'Access-Control-Allow-Headers': 'Content-Type',
+                            'Access-Control-Allow-Origin': '*',
+                            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                          }
+                      }
+                  logger.info("Cache miss.")
+                  # Esegui una richiesta per ottenere i dati meteo a partire da domani
+                  url = "https://api.openweathermap.org/data/2.5/forecast"
+                  params = {
+                      "q": city_name,
+                      "appid": api_key,
+                      "units": "metric",
+                      "start_dt": tomorrow_str  # Specifica la data di inizio
+                  }
+
+                  response = requests.get(url, params=params)
+                  logger.info("Response.")
+                  if response.status_code != 200:
+                      return {
+                          'statusCode': response.status_code,
+                          'headers': {
+                            'Access-Control-Allow-Headers': 'Content-Type',
+                            'Access-Control-Allow-Origin': '*',
+                            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                          },
+                          'body': 'Errore nella richiesta.'
+                      }
+
+                  data = response.json()
+
+                  # Estrai la lista delle previsioni giornaliere
+                  daily_forecasts = []
+                  current_date = None
+                  
+                  for forecast in data['list']:
+                      forecast_date = forecast['dt_txt'].split()[0]
+
+                      if forecast_date != current_date:
+                          current_date = forecast_date
+                          daily_forecast = {
+                              'cityName': city_name,
+                              'date': forecast_date,
+                              'max_temperature': -float('inf'),  # Inizializza con il valore più basso
+                              'min_temperature': float('inf'),   # Inizializza con il valore più alto
+                              'humidity': 0,
+                              'weather': [],
+                              'wind_speed': []
+                          }
+                          daily_forecasts.append(daily_forecast)
+
+                      # Aggiorna i dati del giorno corrente
+                      daily_forecast['max_temperature'] = max(daily_forecast['max_temperature'], forecast['main']['temp_max'])
+                      daily_forecast['min_temperature'] = min(daily_forecast['min_temperature'], forecast['main']['temp_min'])
+                      daily_forecast['humidity'] += forecast['main']['humidity']
+                      daily_forecast['weather'].append(forecast['weather'][0]['description'])
+                      daily_forecast['wind_speed'].append(forecast['wind']['speed'])
+
+                  # Calcola le medie e le mode
+                  for daily_forecast in daily_forecasts:
+                      daily_forecast['humidity'] /= len(daily_forecast['weather'])
+                      daily_forecast['weather'] = max(set(daily_forecast['weather']), key=daily_forecast['weather'].count)
+                      daily_forecast['wind_speed'] = sum(daily_forecast['wind_speed']) / len(daily_forecast['wind_speed'])
+
+                  # Creare un DataFrame con i dati delle previsioni giornaliere
+                  df = pd.DataFrame(daily_forecasts)
+                  df = df.head(5)
+
+                  # Creare un dizionario di output
+                  output = df.to_dict(orient='records')
+
+                  # Memorizza i dati in cache per un'ora
+                  timeout = 60 * 60
+                  key = city_name + "_forecast"
+                  redis_connection.setex(key, timeout, json.dumps(output))
+
+                  return {
+                      'statusCode': 200,
+                      'headers': {
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                      },
+                      'body': json.dumps(output)
+                  }
+              except Exception as ex: 
+                  # Gestisci eventuali eccezioni e registra gli errori
+                  error_message = str(ex)
+                  return {
+                      'statusCode': 500,
+                      'body': json.dumps({'error': error_message}),
+                      'headers': {
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                      }
+                  }
+      Description: AWS Lambda function 5
+      FunctionName: !Ref WeatherForecastFunctionName
+      Handler: index.lambda_handler
+      MemorySize: 512
+      Role: arn:aws:iam::225712706856:role/LabRole
+      Environment:
+        Variables:
+          REDIS_AUTH: ''
+          REDIS_HOST: weatherapp-redis-cluster.rg5ccp.clustercfg.use1.cache.amazonaws.com
+          REDIS_PORT: '6379'
+          DynamoDBTableName: !Ref DynamoDBTableName
+      Layers:
+        - arn:aws:lambda:us-east-1:225712706856:layer:my-redis-layer:1
+        - arn:aws:lambda:us-east-1:225712706856:layer:my-requests-layer:1
+        - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python311:2
+      Runtime: python3.7
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0094b71f6fad4a472 
+          - sg-00bb091f7ea8fc78a 
+        SubnetIds:
+          - subnet-088ce7ca2d1160609
+          - subnet-041b0ec7dddc6b78c
+        Ipv6AllowedForDualStack: false
+      Timeout: 60
+#_______________________________________________________________PASTSTATISTICS___________________________________________________________________________________________
+  ApiGatewayResource6:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: 'paststatistics'
+      RestApiId: !Ref ApiGatewayRestApi
+
+  ApiGatewayMethod6:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        ConnectionType: INTERNET
+        Credentials: arn:aws:iam::225712706856:role/LabRole
+        IntegrationHttpMethod: POST
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PastWeatherStatisticsFunction.Arn}/invocations'
+      OperationName: 'lambda6'
+      ResourceId: !Ref ApiGatewayResource6
+      RestApiId: !Ref ApiGatewayRestApi
+
+  ApiGatewayMethodOptions6:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      ResourceId: !Ref ApiGatewayResource6
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'POST'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            StatusCode: 200
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: 200
+
+  PastWeatherStatisticsFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: |
+          import json
+          import requests
+          import pandas as pd
+          import datetime
+          from datetime import datetime, date
+          import redis
+          from redis import Redis, exceptions
+          import logging
+          import os
+          from dateutil.relativedelta import relativedelta
+
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          def lambda_handler(event, context):
+              redis_connection = None
+              redis_port = None
+              redis_endpoint = None
+              redis_auth = None
+
+              if "REDIS_HOST" in os.environ and "REDIS_AUTH" in os.environ and "REDIS_PORT" in os.environ:
+                  redis_endpoint = os.environ["REDIS_HOST"]
+                  redis_port = os.environ["REDIS_PORT"]
+                  redis_auth = os.environ["REDIS_AUTH"]
+                  logger.info("redis endpoint: " + redis_endpoint)
+              else:
+                  logger.info("Please configure the Redis environment variables!")
+                  return {
+                      'statusCode': 500,
+                      'body': json.dumps({'error': 'Configuration error'}),
+                      'headers': {
+                            'Access-Control-Allow-Headers': 'Content-Type',
+                            'Access-Control-Allow-Origin': '*',
+                            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                          }
+                  }
+
+              try:
+                  logger.info('Starting redis connection')
+                  redis_connection = Redis(host=redis_endpoint, port=redis_port, decode_responses=True)
+                  logger.info("Connected to the Redis server")
+
+                  # Get the city name from the request
+                  body = json.loads(event['body'])
+                  city_name = body['cityName']
+                  logger.info("City: " + city_name)
+
+                  # Check if the data is in cache
+                  key = city_name + "_past"
+                  try:
+                      cached_data = redis_connection.get(key)
+                  except redis.exceptions.ResponseError as ex:
+                      if "MOVED" in str(ex):
+                          logger.info("MOVED exception raised.")
+                          new_location = str(ex).split(' ')[-1]
+                          new_host, new_port = new_location.split(':')
+                          redis_connection = Redis(host=new_host, port=int(new_port), decode_responses=True)
+                          cached_data = redis_connection.get(key)
+
+                  if cached_data:
+                      logger.info("There is cached data")
+                      return {
+                          'statusCode': 200,
+                          'body': cached_data,
+                          'headers': {
+                            'Access-Control-Allow-Headers': 'Content-Type',
+                            'Access-Control-Allow-Origin': '*',
+                            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                          }
+                      }
+                  logger.info("There is no cached data")
+
+                  end_date = date.today()
+                  start_date = end_date - relativedelta(days=7)
+
+                  api_key = 'YL975P9W7BY3S2S4DTPESKVVK'
+                  url = f'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{city_name}/{start_date}/{end_date}?unitGroup=metric&key={api_key}'
+                  logger.info("Before getting the URL")
+                  response = requests.get(url)
+                  logger.info("After getting the URL")
+                  response.raise_for_status()
+                  data = response.json()
+
+                  historical_data = data['days']
+                  logger.info("historical data" + str(historical_data))
+
+                  df = pd.DataFrame(historical_data)
+                  logger.info("Calculating stats")
+
+                  max_temperature = df['tempmax'].max()
+                  min_temperature = df['tempmin'].min()
+                  avg_temperature = df['feelslike'].mean()
+                  max_humidity = df['humidity'].max()
+                  min_humidity = df['humidity'].min()
+                  avg_humidity = df['humidity'].mean()
+                  avg_cloudcover = df['cloudcover'].mean()
+
+                  stats = {
+                      'max_temperature': max_temperature,
+                      'min_temperature': min_temperature,
+                      'avg_temperature': avg_temperature,
+                      'max_humidity': max_humidity,
+                      'min_humidity': min_humidity,
+                      'avg_humidity': avg_humidity,
+                      'avg_cloudcover': avg_cloudcover
+                  }
+                  logger.info("Caching the new data")
+
+                  now = datetime.now()
+                  end_of_day = datetime(now.year, now.month, now.day, 23, 59, 59)
+                  timeout = int((end_of_day - now).total_seconds())
+
+                  key = city_name + "_past"
+                  redis_connection.setex(key, timeout, json.dumps(stats))
+
+                  return {
+                      'statusCode': 200,
+                      'body': json.dumps(stats),
+                      'headers': {
+                            'Access-Control-Allow-Headers': 'Content-Type',
+                            'Access-Control-Allow-Origin': '*',
+                            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                          }
+                  }
+              except Exception as ex:
+                  error_message = str(ex)
+                  return {
+                      'statusCode': 500,
+                      'body': json.dumps({'error': error_message}),
+                      'headers': {
+                            'Access-Control-Allow-Headers': 'Content-Type',
+                            'Access-Control-Allow-Origin': '*',
+                            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                          }
+                  }
+      Description: AWS Lambda function 6
+      FunctionName: !Ref PastWeatherStatisticsFunctionName
+      Handler: index.lambda_handler
+      MemorySize: 256
+      Role: arn:aws:iam::225712706856:role/LabRole
+      Environment:
+        Variables:
+          REDIS_AUTH: ''
+          REDIS_HOST: weatherapp-redis-cluster.rg5ccp.clustercfg.use1.cache.amazonaws.com
+          REDIS_PORT: '6379'
+          DynamoDBTableName: !Ref DynamoDBTableName
+      Layers:
+        - arn:aws:lambda:us-east-1:225712706856:layer:my-redis-layer:1
+        - arn:aws:lambda:us-east-1:225712706856:layer:my-requests-layer:1
+        - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python311:2
+      Runtime: python3.7
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0094b71f6fad4a472 
+          - sg-00bb091f7ea8fc78a 
+        SubnetIds:
+          - subnet-088ce7ca2d1160609
+          - subnet-041b0ec7dddc6b78c
+        Ipv6AllowedForDualStack: false
+      Timeout: 60
