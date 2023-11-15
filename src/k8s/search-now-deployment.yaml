@@ -28,6 +28,9 @@ spec:
           name: search-now
           ports:
             - containerPort: 50053
-          resources: {}
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
       restartPolicy: Always
 status: {}

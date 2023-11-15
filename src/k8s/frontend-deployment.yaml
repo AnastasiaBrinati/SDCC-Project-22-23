@@ -28,6 +28,9 @@ spec:
           name: frontend
           ports:
             - containerPort: 5000
-          resources: {}
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
       restartPolicy: Always
 status: {}

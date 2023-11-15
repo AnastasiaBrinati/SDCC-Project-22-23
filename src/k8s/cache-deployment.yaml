@@ -38,7 +38,10 @@ spec:
           name: cache
           ports:
             - containerPort: 6379
-          resources: {}
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
           volumeMounts:
             - mountPath: /data
               name: cache

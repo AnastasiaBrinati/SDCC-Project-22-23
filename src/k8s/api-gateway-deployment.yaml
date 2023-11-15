@@ -29,6 +29,9 @@ spec:
           name: api-gateway
           ports:
             - containerPort: 50050
-          resources: {}
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
       restartPolicy: Always
 status: {}
