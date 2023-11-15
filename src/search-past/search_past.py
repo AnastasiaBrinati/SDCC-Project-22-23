@@ -103,9 +103,6 @@ class SearcherPast(searchpast_pb2_grpc.SearcherPastServicer):
             return searchpast_pb2.SearchPastReply(city=city, max_temperature=float(max_temp), min_temperature=float(min_temp), avg_temperature=float(avg_temp), max_humidity=float(max_hum), min_humidity=float(min_hum), avg_humidity=float(avg_hum), avg_cloudcover=float(avg_clo))
 
         else:
-            fp = open("errorichache.txt", "a")
-            fp.write("ecco res: "+res)
-            fp.close()
             # no need to cache, we already got the data
             # just convert the string to dict
             # and slicing off the first char because it's bytes
