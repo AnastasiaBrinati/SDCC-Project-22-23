@@ -20,7 +20,11 @@ Disclaimer: we didn't care for security aspects, most passwords and passwkeys ar
 Per il deployment 'manuale' è sufficiente una macchina con minikube e fare il clone della repo
 
 -spostarsi nella sottocartella /k8s
+
 -kubectl apply -f .
+
 -attendere/controllare che i pods siano tutti running
+
 -kubctl get pods
+
 -minikube tunnel
